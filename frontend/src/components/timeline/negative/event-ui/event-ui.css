@@ -1,0 +1,21 @@
+.base {
+    height: 150px;
+    min-width: 230px;
+    align-self: center;
+    color: black;
+}
+
+.year {
+    border: 7px solid white;
+    background-color: rgb(61, 57, 57);
+    color: white;
+}
+
+.event {
+    background-color: rgb(138, 125, 125);
+    border: 7px solid rgb(50, 55, 136);
+}
+
+.year.selected { 
+    border: 7px solid red; 
+}

@@ -1,0 +1,31 @@
+/***************** EVENTS LIST WRAPPER ****************/
+.events-list-wrapper {
+    height: 210px;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* border above and under events */
+.border {
+    height: 30px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    gap: 0.90%;
+    background-color: rgba(3, 3, 3, 0.301);
+}
+
+/* full events list wapper */
+.full-events-wrapper {
+    height: 210px;
+    display: flex;
+    margin-left: 1%;
+    max-width: 99%;
+} 
+
+/* display horizontally */
+.years-events-wrapper {
+    display: flex;
+}
