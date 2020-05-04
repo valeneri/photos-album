@@ -35,9 +35,9 @@ const EventsPage = () => {
     useEffect(() => {
         const getAllYears = async () => {
             const response = await api.getAllYearsWithoutEvents();
-            response.data.forEach((data: any) => {
-                data["selected"] = false;
-            })
+            // response.data.forEach((data: any) => {
+            //     data["selected"] = false;
+            // })
             setYearsEventsList(response.data);
         }
         getAllYears();
@@ -50,21 +50,41 @@ const EventsPage = () => {
     };
 
     // Get events in the selected year and toggle selected flag 
-    const handleSelectEvent = async (id: string): Promise<any> => {
+    const selectYear = async (yearEvents: YearEvents): Promise<any> => {
+        const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
         const copyEventsList = [...yearsEventsList];
-        const index = yearsEventsList.findIndex(event => event._id === id);
 
-        if (!copyEventsList[index].selected && !copyEventsList[index].events) {
-            const events = await getYearEvents(copyEventsList[index].date);
-
-            events.forEach((event: Event) => {
-                event["selected"] = false;
-            });
+        if (!yearEvents.events && index != -1) {
+            const events = await getYearEvents(yearEvents.date);
             copyEventsList[index].events = events;
         }
 
         copyEventsList[index].selected = !copyEventsList[index].selected;
         setYearsEventsList(copyEventsList);
+    }
+
+    // Toggle selected flag for event
+    const selectEvent = async (event: Event) => {
+        const copyEventsList = [...yearsEventsList];
+
+        copyEventsList.forEach(yearEvents => {
+            if (yearEvents.events) {
+                const eventIndex = yearEvents.events.findIndex(evt => evt._id === event._id);
+                if (eventIndex !== -1) {
+                    yearEvents.events[eventIndex].selected = !yearEvents.events[eventIndex].selected;
+                }
+            }
+        })
+        setYearsEventsList(copyEventsList);
+    }
+
+    // handle actions on select, base on event category
+    const handleSelectEvent = (event: any) => {
+        if (event.category === "year") {
+            selectYear(event);
+        } else {
+            selectEvent(event);
+        }
     };
 
     return (

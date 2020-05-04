@@ -22,7 +22,7 @@ const EventUI = ({ event, setSelectedEvent, className }: EventUIProps) => {
     }
 
     return (
-        <div className={setClass(className)} onClick={() => setSelectedEvent(event._id)} >
+        <div className={setClass(className)} onClick={() => setSelectedEvent(event)} >
             <h5>{event.title}</h5>
             <span>{event.date}</span>
         </div>

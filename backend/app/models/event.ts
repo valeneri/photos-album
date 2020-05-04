@@ -21,10 +21,10 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    isEvent: {
+    selected: {
         type: Boolean,
-        default: true
-    },
+        default: false
+    }
 })
 
 export default mongoose.model('Event', EventSchema);

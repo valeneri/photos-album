@@ -14,7 +14,11 @@ const YearSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isEvent: {
+    // isEvent: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    selected: {
         type: Boolean,
         default: false
     }
