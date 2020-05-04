@@ -1,0 +1,32 @@
+
+/* .base {
+    height: 150px;
+    min-width: 230px;
+    align-self: center;
+    color: black;
+} */
+
+.year {
+    border: 7px solid white;
+    background-color: rgb(61, 57, 57);
+    color: white;
+    min-width: 230px;
+    height: 150px;
+}
+
+.event {
+    background-color: rgb(138, 125, 125);
+    border: 3.5px solid white;
+    min-height: 100px;
+    min-width: 170px;
+    font-size: medium;
+}
+
+.year.selected { 
+    border: 7px solid black; 
+    border-right: none;
+}
+
+.event.selected {
+    border: 3.5px solid rgb(35, 11, 139);
+}
