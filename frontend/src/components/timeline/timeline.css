@@ -1,6 +1,6 @@
 /******************** TIMELINE ******************/
 .timeline {
-    height: 250px;
+    height: 320px;
     background-color: white;
     color: black;
 }
@@ -13,13 +13,14 @@
 
 /* negative component  */
 .negative-component {
-    height: 210px;
+    height: 250px;
 }
 
 
 /************* SELECTORS *************/
 .selectors {
-    height: 80px;
+    min-height: 70px;
+    /* max-height: 10%; */
     display: flex;
 }
 
@@ -35,9 +36,10 @@
 /* filters components */
 .filters-component {
     padding-left: 2%;
-    width: 23%;
+    width: 50%;
     height: 100%;
     display: flex;
+    /* flex-direction: column; */
 }
 
 /* selected years components*/

@@ -9,3 +9,7 @@ export const getAllYearsWithoutEvents = (): Promise<AxiosResponse> => {
 export const getEventsByYear = (year: string): Promise<AxiosResponse> => {
     return axios.get(`http://localhost:8080/api/events/${year}`)
 }
+
+export const getPhotosByYear = (year: string): Promise<AxiosResponse> => {
+    return axios.get(`http://localhost:8080/api/photos/${year}`)
+}

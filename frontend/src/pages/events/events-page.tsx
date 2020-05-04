@@ -15,6 +15,13 @@ export interface Event {
     photos: any[]
 }
 
+export interface Photo {
+    name: string,
+    title: string,
+    path: string,
+    date: string
+}
+
 export interface YearEvents {
     _id: string,
     category: string,
@@ -22,7 +29,8 @@ export interface YearEvents {
     date: string,
     selected: boolean,
     isEvent: boolean,
-    events: Event[]
+    events: Event[],
+    photos: Photo[]
 }
 
 
@@ -35,9 +43,6 @@ const EventsPage = () => {
     useEffect(() => {
         const getAllYears = async () => {
             const response = await api.getAllYearsWithoutEvents();
-            // response.data.forEach((data: any) => {
-            //     data["selected"] = false;
-            // })
             setYearsEventsList(response.data);
         }
         getAllYears();
@@ -49,6 +54,16 @@ const EventsPage = () => {
         return response.data;
     };
 
+
+    // handle actions on select, base on event category
+    const handleSelectEvent = (event: any) => {
+        if (event.category === "year") {
+            selectYear(event);
+        } else {
+            selectEvent(event);
+        }
+    };
+
     // Get events in the selected year and toggle selected flag 
     const selectYear = async (yearEvents: YearEvents): Promise<any> => {
         const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
@@ -56,7 +71,14 @@ const EventsPage = () => {
 
         if (!yearEvents.events && index != -1) {
             const events = await getYearEvents(yearEvents.date);
+            // const events = response.data;
             copyEventsList[index].events = events;
+        }
+
+        if (!yearEvents.photos && index != -1) {
+            const response = await api.getPhotosByYear(yearEvents.date);
+            const photos = response.data;
+            copyEventsList[index].photos = photos;
         }
 
         copyEventsList[index].selected = !copyEventsList[index].selected;
@@ -78,14 +100,10 @@ const EventsPage = () => {
         setYearsEventsList(copyEventsList);
     }
 
-    // handle actions on select, base on event category
-    const handleSelectEvent = (event: any) => {
-        if (event.category === "year") {
-            selectYear(event);
-        } else {
-            selectEvent(event);
-        }
-    };
+    const filterSelectedEvents = () => {
+        const selectedEvents = yearsEventsList.filter(yearEvents => yearEvents.selected);
+        return selectedEvents;
+    }
 
     return (
         <div className="main-wrapper">
@@ -95,7 +113,7 @@ const EventsPage = () => {
                 }
             </div>
             <div className="photos-thumbnails-component">
-                <PhotosThumbnails />
+                {<PhotosThumbnails selectedEvents={filterSelectedEvents()} />}
             </div>
         </div>
     )

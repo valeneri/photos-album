@@ -1,4 +1,43 @@
-div {
+.photos-thumbnails {
     min-height: 700px;
-    border: 3px solid red;
+    font-size: large;
+    text-align: left;
+    /* border: 3px solid red; */
+    /* display:flex; */
+}
+
+.photos-wrapper {
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+.photos {
+    display: flex;
+    /* align-content: center; */
+    /* flex-direction: column; */
+}
+
+.years-details {
+    width: 20%;
+    /* padding-left: 50%; */
+    display: flex;
+    /* align-items: center; */
+}
+
+.separator {
+    display: flex;
+}
+
+.photos-events-list {
+    width:100%;
+    /* padding-left: 50%; */
+}
+
+.current-year {
+    width: 100%;
+    color: red;
+}
+
+.current-events {
+    width: 100%;
 }
