@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 import Year from '../models/year';
 
+// get all years without the events
 export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
     try {
         const years = await Year.find();
