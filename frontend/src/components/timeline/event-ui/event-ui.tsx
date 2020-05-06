@@ -23,8 +23,8 @@ const EventUI = ({ event, setSelectedEvent, className }: EventUIProps) => {
 
     return (
         <div className={setClass(className)} onClick={() => setSelectedEvent(event)} >
-            <h5>{event.title}</h5>
-            <span>{event.date}</span>
+            {/* <h5>{event.title}</h5> */}
+            <h5>{event.date}</h5>
         </div>
     )
 }

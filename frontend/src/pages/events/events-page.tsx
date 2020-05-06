@@ -16,10 +16,12 @@ export interface Event {
 }
 
 export interface Photo {
+    _id: string,
     name: string,
     title: string,
     path: string,
     date: string
+    eventTag: string
 }
 
 export interface YearEvents {
@@ -67,29 +69,38 @@ const EventsPage = () => {
     // Get events in the selected year and toggle selected flag 
     const selectYear = async (yearEvents: YearEvents): Promise<any> => {
         const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
-        const copyEventsList = [...yearsEventsList];
+        const copyYearsEventsList = [...yearsEventsList];
+        // const copySelectedEventsList = [...selectedEventsList];
 
         if (!yearEvents.events && index != -1) {
             const events = await getYearEvents(yearEvents.date);
             // const events = response.data;
-            copyEventsList[index].events = events;
+            copyYearsEventsList[index].events = events;
         }
 
-        if (!yearEvents.photos && index != -1) {
-            const response = await api.getPhotosByYear(yearEvents.date);
-            const photos = response.data;
-            copyEventsList[index].photos = photos;
-        }
+        /***********functional, no need for the moment **/
 
-        copyEventsList[index].selected = !copyEventsList[index].selected;
-        setYearsEventsList(copyEventsList);
+        // if (!yearEvents.photos && index != -1) {
+        //     const response = await api.getPhotosByYear(yearEvents.date);
+        //     const photos = response.data;
+        //     copyYearsEventsList[index].photos = photos;
+        // }
+
+        copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
+        setYearsEventsList(copyYearsEventsList);
     }
 
-    // Toggle selected flag for event
+    // Get all photos of selected event and toggle selected flag 
     const selectEvent = async (event: Event) => {
-        const copyEventsList = [...yearsEventsList];
+        const copyYearsEventsList = [...yearsEventsList];
 
-        copyEventsList.forEach(yearEvents => {
+        if (!event.photos) {
+            const response = await api.getPhotosByEventName(event.title, event.date);
+            const photos = response.data;
+            event.photos = photos;
+        }
+
+        copyYearsEventsList.forEach(yearEvents => {
             if (yearEvents.events) {
                 const eventIndex = yearEvents.events.findIndex(evt => evt._id === event._id);
                 if (eventIndex !== -1) {
@@ -97,11 +108,13 @@ const EventsPage = () => {
                 }
             }
         })
-        setYearsEventsList(copyEventsList);
+        setYearsEventsList(copyYearsEventsList);
     }
 
     const filterSelectedEvents = () => {
-        const selectedEvents = yearsEventsList.filter(yearEvents => yearEvents.selected);
+        const selectedEvents = yearsEventsList.filter(yearEvents => {
+            return (yearEvents.selected && yearEvents.events.filter(event => event.selected))
+        })
         return selectedEvents;
     }
 
@@ -113,7 +126,7 @@ const EventsPage = () => {
                 }
             </div>
             <div className="photos-thumbnails-component">
-                {<PhotosThumbnails selectedEvents={filterSelectedEvents()} />}
+                {<PhotosThumbnails selectedEvents={filterSelectedEvents()} setSelectedEvent={handleSelectEvent} />}
             </div>
         </div>
     )

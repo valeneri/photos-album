@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import "./horizontal-scroll.css";
 import { YearEvents } from "../../../pages/events/events-page";
-// import { useContainerWidth } from "../../../utils/custom-hooks";
 
 // horizontal scroll props interface declaration
 interface HorizontalScrollProps {
@@ -17,37 +16,12 @@ const HorizontalScroll = ({ setNegativeTranslation, yearsEventsList }: Horizonta
     const tickStep = 100 / yearsEventsList.length;
     let tickVal = 0;
 
-    // const sliderRef = useRef()
-    // const width = useContainerWidth(sliderRef)
     // set scroll value on slider change and send translation to timeline
     const handleScrollChange = (e: any) => {
         const val = e.target.value;
         setNegativeTranslation(parseInt(val));
         setScrollValue(val);
     }
-
-    // const generateDataList = () => {
-    //     const tickStep = 100/yearsEventsList.length;
-    //     let tickVal = 0;
-
-    //     const datalist = <datalist id="tickmarks"></datalist>
-
-
-    //     const optionList = yearsEventsList.map(year => {
-    //         tickVal = tickVal + tickStep;
-    //         return {value: `${tickVal}`, label:`${year.date}`}
-    //     })
-    //     return(
-    //         <datalist id="tickmarks">
-
-    //         </datalist>
-    //     )
-    //     const optionList = yearsEventsList.map(year => {
-    //          tickVal = tickVal + tickStep;
-    //         return (<option value=`${tickVal}` label=`${year.date}`/>)
-    //     });
-    //     return optionList;
-    // }
 
     return (
         <div className="scroll-wrapper">

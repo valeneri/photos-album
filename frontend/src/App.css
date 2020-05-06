@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  height: 100vh;
+  min-height: 100vh;
   font-size: calc(8px + 2vmin);
   color: white;
 }

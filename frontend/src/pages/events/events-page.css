@@ -16,10 +16,10 @@
 
 /* photos thumbnails component */
 .photos-thumbnails-component {
-    /* border: 3px solid red; */
+    /* border: 2px solid red; */
     height: 100%;
-    /* margin-left: 5%; */
-    /* margin-right: 5%; */
-    width: 100%;
-    background-color: #2b2f35;
+    /* margin-left: 2%; 
+    margin-right: 2%; */
+    max-width: 100%;
+    background-color: #393e46;
 }

@@ -12,6 +12,9 @@
     color: white;
     min-width: 230px;
     height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .event {
@@ -23,8 +26,8 @@
 }
 
 .year.selected { 
-    border: 7px solid black; 
-    border-right: none;
+    border: 7px solid rgb(240, 89, 89); 
+    /* border-right: none; */
 }
 
 .event.selected {
