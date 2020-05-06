@@ -1,65 +1,65 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Event, YearEvents } from "../../pages/events/events-page";
 import DisplayPhotos from "./display-photos/display-photos";
+import * as api from "../../api/api";
 import "./photos-thumbnails.css";
 
 interface PhotosThumbnailsProps {
-    selectedEvents: YearEvents[],
+    selectedYear: YearEvents,
     setSelectedEvent: any
 }
 
-const PhotosThumbnails = ({ selectedEvents, setSelectedEvent }: PhotosThumbnailsProps) => {
+const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsProps) => {
 
     // display selected event photos, or "click me" if no event is selected
-    const displayPhotos = (year: YearEvents) => {
-        const selectedEvents = year.events.filter((event: Event) => event.selected)
+    const displayPhotos = (events: Event[]) => {
+        const selectedEvents = events.filter((event: Event) => event.selected);
+
         if (selectedEvents.length > 0) {
-            return (selectedEvents.map((event: Event) => {
-                if (event.photos) {
+            return selectedEvents.map((event: Event) => {
+                if (event.selected && event.photos.length > 0) {
                     return (<DisplayPhotos selectedEvent={event} key={event._id} />)
                 }
-            }))
+            })
         } else {
             return (<h3>Cliquez sur un onglet pour afficher les photos !</h3>)
         }
     }
 
+    const handleSelectedEvent = (event: Event) => {
+        event.selected = !event.selected;
+        setSelectedEvent(event);
+    }
+
     return (
-        <div className="photos-thumbnails">
-            {selectedEvents && selectedEvents.map((year: YearEvents) => {
-                return (
-                    <div key={year._id} className="full-year-wrapper">
-                        <div className="year-tab">
-                            <div className="year-details">
-                                <h2>{year.date}</h2>
-                            </div>
-                            <div className="events-tab-wrapper">
-                                <div className="event-tab-details">
-                                    <h5>Afficher tous</h5>
-                                </div>
-                                {year.events && year.events.map(event => {
-                                    return (
-                                        <div key={`${event._id}`} className="event-tab-details" onClick={() => setSelectedEvent(event)}>
-                                            <h5>{event.title}</h5>
-                                            <p>
-                                                <span>{event.date}</span>
-                                            </p>
-                                        </div>
-                                    )
-                                })
-                                }
-                            </div>
-                        </div>
-                        {
-                            <div className="thumbnails-wrapper">
-                                {
-                                    displayPhotos(year)
-                                }
-                            </div>
-                        }
+        <div className="full-year-wrapper">
+            <div className="year-tab">
+                <div className="year-details">
+                    <h2>{selectedYear.date}</h2>
+                </div>
+                <div className="events-tab-wrapper">
+                    <div className="event-tab-details">
+                        <h5>Afficher tous</h5>
                     </div>
-                )
-            })
+                    {selectedYear.events && selectedYear.events.map(event => {
+                        return (
+                            <div key={`${event._id}`} className="event-tab-details" onClick={() => handleSelectedEvent(event)}>
+                                <h5>{event.title}</h5>
+                                <p>
+                                    <span>{event.date}</span>
+                                </p>
+                            </div>
+                        )
+                    })
+                    }
+                </div>
+            </div>
+            {
+                <div className="thumbnails-wrapper">
+                    {
+                        displayPhotos(selectedYear.events)
+                    }
+                </div>
             }
         </div>
     )

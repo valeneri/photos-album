@@ -6,7 +6,7 @@ export const getAllYearsWithoutEvents = (): Promise<AxiosResponse> => {
 }
 
 // get all events of selected year
-export const getEventsByYear = (year: string): Promise<AxiosResponse> => {
+export const getEventsByYearWithPhotos = (year: string): Promise<AxiosResponse> => {
     return axios.get(`http://localhost:8080/api/events/${year}`)
 }
 

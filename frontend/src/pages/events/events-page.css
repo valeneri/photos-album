@@ -14,12 +14,21 @@
     height: 15%;
 }
 
-/* photos thumbnails component */
+/********************** PHOTOS THUMBNAILS COMPONENT **********************/
 .photos-thumbnails-component {
     /* border: 2px solid red; */
+    min-height: 700px;
     height: 100%;
     /* margin-left: 2%; 
     margin-right: 2%; */
     max-width: 100%;
     background-color: #393e46;
+}
+
+.photos-thumbnails {
+    font-size: large;
+    text-align: left;
+    /* border: 3px solid red; */
+    /* display:flex; */
+    height: 100%;
 }

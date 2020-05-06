@@ -51,8 +51,8 @@ const EventsPage = () => {
     }, []);
 
     // API call to get events in the selected year
-    const getYearEvents = async (date: string) => {
-        const response = await api.getEventsByYear(date);
+    const getEventsByYearWithPhotos = async (date: string) => {
+        const response = await api.getEventsByYearWithPhotos(date);
         return response.data;
     };
 
@@ -61,7 +61,8 @@ const EventsPage = () => {
     const handleSelectEvent = (event: any) => {
         if (event.category === "year") {
             selectYear(event);
-        } else {
+        }
+        else {
             selectEvent(event);
         }
     };
@@ -70,66 +71,55 @@ const EventsPage = () => {
     const selectYear = async (yearEvents: YearEvents): Promise<any> => {
         const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
         const copyYearsEventsList = [...yearsEventsList];
-        // const copySelectedEventsList = [...selectedEventsList];
 
         if (!yearEvents.events && index != -1) {
-            const events = await getYearEvents(yearEvents.date);
-            // const events = response.data;
+            const events = await getEventsByYearWithPhotos(yearEvents.date);
             copyYearsEventsList[index].events = events;
         }
-
-        /***********functional, no need for the moment **/
-
-        // if (!yearEvents.photos && index != -1) {
-        //     const response = await api.getPhotosByYear(yearEvents.date);
-        //     const photos = response.data;
-        //     copyYearsEventsList[index].photos = photos;
-        // }
 
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
         setYearsEventsList(copyYearsEventsList);
     }
 
-    // Get all photos of selected event and toggle selected flag 
+    // toggle selected flag 
     const selectEvent = async (event: Event) => {
         const copyYearsEventsList = [...yearsEventsList];
-
-        if (!event.photos) {
-            const response = await api.getPhotosByEventName(event.title, event.date);
-            const photos = response.data;
-            event.photos = photos;
-        }
 
         copyYearsEventsList.forEach(yearEvents => {
             if (yearEvents.events) {
                 const eventIndex = yearEvents.events.findIndex(evt => evt._id === event._id);
                 if (eventIndex !== -1) {
-                    yearEvents.events[eventIndex].selected = !yearEvents.events[eventIndex].selected;
+                    yearEvents.events[eventIndex] = event;
                 }
             }
         })
         setYearsEventsList(copyYearsEventsList);
     }
 
-    const filterSelectedEvents = () => {
-        const selectedEvents = yearsEventsList.filter(yearEvents => {
-            return (yearEvents.selected && yearEvents.events.filter(event => event.selected))
-        })
-        return selectedEvents;
-    }
-
     return (
         <div className="main-wrapper">
             <div className="timeline-component">
-                {yearsEventsList.length > 0 &&
+                {
+                    yearsEventsList.length > 0 &&
                     <Timeline yearsEventsList={yearsEventsList} setSelectedEvent={handleSelectEvent}></Timeline>
                 }
             </div>
             <div className="photos-thumbnails-component">
-                {<PhotosThumbnails selectedEvents={filterSelectedEvents()} setSelectedEvent={handleSelectEvent} />}
+                {
+                    yearsEventsList.map((year: YearEvents) => {
+                        if (year.selected) {
+                            return (
+                                <div className="photos-thumbnails" key={year._id}>
+                                    <PhotosThumbnails selectedYear={year} setSelectedEvent={handleSelectEvent} />
+                                </div>
+                            )
+                        }
+                    })
+                }
             </div>
         </div>
     )
 };
 
 export default EventsPage;
+

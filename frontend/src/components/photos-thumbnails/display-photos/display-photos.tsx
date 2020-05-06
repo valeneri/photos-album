@@ -8,7 +8,7 @@ interface DisplayPhotosProps {
 }
 
 const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
-
+    console.log("display photos")
     // loop through photos then display event associated photos
     const displayEventPhotos = (photos: Photo[]) => {
         return photos.map((photo: Photo) => {

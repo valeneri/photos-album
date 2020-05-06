@@ -1,13 +1,3 @@
-/********************** PHOTOS THUMBNAILS COMPONENT **********************/
-.photos-thumbnails {
-    min-height: 700px;
-    font-size: large;
-    text-align: left;
-    /* border: 3px solid red; */
-    /* display:flex; */
-    height: 100%;
-}
-
 /*********** year wrapper ************/
 .full-year-wrapper {
     display: flex;
