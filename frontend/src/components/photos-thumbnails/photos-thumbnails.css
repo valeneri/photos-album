@@ -1,43 +1,72 @@
+/********************** PHOTOS THUMBNAILS COMPONENT **********************/
 .photos-thumbnails {
     min-height: 700px;
     font-size: large;
     text-align: left;
     /* border: 3px solid red; */
     /* display:flex; */
+    height: 100%;
 }
 
-.photos-wrapper {
-    max-width: 300px;
+/*********** year wrapper ************/
+.full-year-wrapper {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    border: 3px solid wheat;
+    margin: 2%;
+    background-color: #484e5777;
 }
-.photos {
+
+/* tab */
+.year-tab {
     display: flex;
-    /* align-content: center; */
-    /* flex-direction: column; */
+    justify-content: center;
+    align-content: center;
+    border: 3px solid white;
+    margin: 2%;
+    /* background-color: #484e5777; */
 }
 
-.years-details {
-    width: 20%;
-    /* padding-left: 50%; */
-    display: flex;
-    /* align-items: center; */
-}
-
-.separator {
-    display: flex;
-}
-
-.photos-events-list {
-    width:100%;
-    /* padding-left: 50%; */
-}
-
-.current-year {
-    width: 100%;
+/* year detail */
+.year-details {
+    width:25%;
     color: red;
+    text-align: left;
+    align-items: left;
+    display: flex;
 }
 
-.current-events {
+/* events tab wrapper */
+.events-tab-wrapper {
+    align-self: right;
+    width: 75%;
+    display: flex;
+}
+
+/* event tab details */
+.event-tab-details {
     width: 100%;
+    text-align: center;
+    min-height: 100%;
+    height:100px;
+    border-left: 2px solid white;
+    align-self: center;
+}
+
+.event-tab-details  p > span {
+    font-size: medium;
+    color: rgb(216, 195, 195);
+}
+
+
+
+
+/********* Thumbnails wrapper ********/
+.thumbnails-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin: 2%;
+    text-align: center;
 }
