@@ -44,9 +44,10 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
                     {selectedYear.events && selectedYear.events.map(event => {
                         return (
                             <div key={`${event._id}`} className="event-tab-details" onClick={() => handleSelectedEvent(event)}>
-                                <h5>{event.title}</h5>
+                                <small>{event.title}</small>
                                 <p>
-                                    <span>{event.date}</span>
+                                    <small>{event.full_date}</small><br />
+                                    <small>{event.photosNumber} photos</small>
                                 </p>
                             </div>
                         )

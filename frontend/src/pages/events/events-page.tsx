@@ -3,15 +3,18 @@ import Timeline from "../../components/timeline/timeline";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
 import * as api from "../../api/api";
 import "./events-page.css"
+import { AxiosResponse } from "axios";
 
 export interface Event {
     _id: string,
     category: string,
     title: string,
     date: string,
+    full_date: string,
     description: string,
     location: string,
     selected: boolean,
+    photosNumber: number,
     photos: any[]
 }
 
@@ -31,6 +34,7 @@ export interface YearEvents {
     date: string,
     selected: boolean,
     isEvent: boolean,
+    eventsNumber: number,
     events: Event[],
     photos: Photo[]
 }
@@ -50,13 +54,6 @@ const EventsPage = () => {
         getAllYears();
     }, []);
 
-    // API call to get events in the selected year
-    const getEventsByYearWithPhotos = async (date: string) => {
-        const response = await api.getEventsByYearWithPhotos(date);
-        return response.data;
-    };
-
-
     // handle actions on select, base on event category
     const handleSelectEvent = (event: any) => {
         if (event.category === "year") {
@@ -68,22 +65,28 @@ const EventsPage = () => {
     };
 
     // Get events in the selected year and toggle selected flag 
-    const selectYear = async (yearEvents: YearEvents): Promise<any> => {
+    const selectYear = async (yearEvents: YearEvents) => {
         const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
         const copyYearsEventsList = [...yearsEventsList];
 
         if (!yearEvents.events && index != -1) {
-            const events = await getEventsByYearWithPhotos(yearEvents.date);
-            copyYearsEventsList[index].events = events;
+            const response = await api.getEventsByYear(yearEvents.date);
+            copyYearsEventsList[index]["events"] = response.data;
         }
 
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
         setYearsEventsList(copyYearsEventsList);
     }
 
-    // toggle selected flag 
+    // Get event's photos and toggle selected flag 
     const selectEvent = async (event: Event) => {
         const copyYearsEventsList = [...yearsEventsList];
+
+        if (!event.photos) {
+            const tag = `${event.title}_${event.full_date}`;
+            const response = await api.getPhotosByEvent(tag);
+            event["photos"] = response.data;
+        }
 
         copyYearsEventsList.forEach(yearEvents => {
             if (yearEvents.events) {

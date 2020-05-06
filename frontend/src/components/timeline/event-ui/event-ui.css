@@ -13,8 +13,13 @@
     min-width: 230px;
     height: 150px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.year p {
+    font-size: medium;
 }
 
 .event {

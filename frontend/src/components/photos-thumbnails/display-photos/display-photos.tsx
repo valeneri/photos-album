@@ -8,7 +8,6 @@ interface DisplayPhotosProps {
 }
 
 const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
-    console.log("display photos")
     // loop through photos then display event associated photos
     const displayEventPhotos = (photos: Photo[]) => {
         return photos.map((photo: Photo) => {
@@ -23,7 +22,7 @@ const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
 
     return (
         <div style={{ border: `2px solid white`, marginBottom: `2%` }}>
-            <h3>{selectedEvent.title} {selectedEvent.date}</h3>
+            <h3>{selectedEvent.title} {selectedEvent.full_date}</h3>
             <div className="display-photos">
                 {displayEventPhotos(selectedEvent.photos)}
             </div>
