@@ -14,11 +14,9 @@ export const getPhotosByYear = async (req: Request, res: Response) => {
 }
 
 // get all photos in a selected event
-export const getPhotosByEventName = async (req: Request, res: Response) => {
+export const getPhotosByEventTag = async (req: Request, res: Response) => {
     try {
-        const name = req.params['name'];
-        const date = req.params['date']
-        const eventTag = `${name}_${date}`;
+        const eventTag = req.params['tag']
         const photos = await Photo.find({ eventTag: eventTag });
         res.status(200).json(photos)
     } catch (err) {
