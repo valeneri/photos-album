@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Timeline from "../../components/timeline/timeline";
-import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
+import React, { useEffect, useState } from "react";
 import * as api from "../../api/api";
-import "./events-page.css"
-import { AxiosResponse } from "axios";
+import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
+import Timeline from "../../components/timeline/timeline";
+import "./events-page.css";
 
 export interface Event {
     _id: string,
