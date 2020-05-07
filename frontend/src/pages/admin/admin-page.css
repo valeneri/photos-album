@@ -1,0 +1,21 @@
+.admin {
+    background-color: #393e46;
+    min-height: 100vh;
+    height: 100ù;
+}
+
+.table-component {
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+}
+
+.full-form {
+    display: flex;
+}
+
+.create-event-form {
+    max-width: 30%;
+    border: 2px solid wheat;
+}
+

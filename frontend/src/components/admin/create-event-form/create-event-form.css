@@ -1,0 +1,6 @@
+.add-event-form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding: 5%;
+}

@@ -21,13 +21,12 @@ const Header = ({ siteTitle }: Props) => (
                 <li className="events-link">
                     <Link to="/years"><h5>Photos par années</h5></Link>
                 </li>
+                <li className="events-link">
+                    <Link to="/adcret-semin"><h5>Super adcret-semin !</h5></Link>
+                </li>
             </ul>
         </nav>
     </header>
 )
-
-Header.defaultProps = {
-    siteTitle: `Souvenirs`,
-}
 
 export default Header;
