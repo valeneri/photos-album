@@ -27,7 +27,7 @@ const EventSchema = new mongoose.Schema({
     },
     selected: {
         type: Boolean,
-        default: false
+        required: false
     }
 })
 

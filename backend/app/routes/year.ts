@@ -7,4 +7,7 @@ export const yearRouter = router();
 // Get all years
 yearRouter.get('/', yearController.getAllYearsWithoutEvents);
 
-// yearRouter.post('/', yearController.createYear);
+// Get all years with events
+yearRouter.get('/events', yearController.getAllYearsEvents);
+
+yearRouter.post('/', yearController.createYear);

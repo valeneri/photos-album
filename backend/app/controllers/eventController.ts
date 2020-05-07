@@ -37,6 +37,28 @@ export const getEventsByYear = async (req: Request, res: Response) => {
     }
 }
 
+export const createEvent = async (req: Request, res: Response) => {
+    try {
+        const newEvent = req.body.newEvent;
+
+        if (newEvent) {
+            const event = new Event({
+                title: newEvent.title,
+                full_date: newEvent.full_date,
+                date: newEvent.date,
+                location: newEvent.location,
+                description: newEvent.description,
+                category: newEvent.category
+            })
+            const createdEvent = await event.save();
+            res.status(201).json(createdEvent);
+        } else {
+            res.status(500).json({ message: "no data" })
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}
 // export const getEventsByYearWithPhotos = async (req: Request, res: Response) => {
 //     try {
 //         const year = req.params['date'];
