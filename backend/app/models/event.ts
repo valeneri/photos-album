@@ -28,6 +28,10 @@ const EventSchema = new mongoose.Schema({
     selected: {
         type: Boolean,
         required: false
+    },
+    eventTag: {
+        type: String,
+        required: true
     }
 })
 

@@ -20,6 +20,14 @@ const PhotoSchema = new mongoose.Schema({
     eventTag: {
         type: String,
         required: true
+    },
+    mimeType: {
+        type: String,
+        required: true
+    },
+    dir: {
+        type: String,
+        required: true
     }
 })
 

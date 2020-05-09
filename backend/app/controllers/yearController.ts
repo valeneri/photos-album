@@ -1,6 +1,7 @@
 
 import { Request, Response } from "express";
 import Year from '../models/year';
+import { sendOKResponse, sendCreatedResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse } from './responseHandler';
 
 // get all years including related events number, but without the events
 export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
@@ -25,9 +26,9 @@ export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
                 }
             }
         ]);
-        res.status(200).json(years)
+        sendOKResponse(res, years);
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        sendInternalServerErrorResponse(res, err);
     }
 }
 
@@ -44,16 +45,14 @@ export const getAllYearsEvents = async (req: Request, res: Response) => {
             },
             { $sort: { date: -1 } }
         ]);
-
-        res.status(200).json(years);
+        sendOKResponse(res, years);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        sendInternalServerErrorResponse(res, err);
     }
 }
 
 
 export const createYear = async (req: Request, res: Response) => {
-    console.log(req.body);
 
     const year = new Year({
         title: `Année ${req.body.year.date}`,
@@ -62,9 +61,9 @@ export const createYear = async (req: Request, res: Response) => {
 
     try {
         const newYear = await year.save()
-        res.status(201).json(newYear);
+        sendCreatedResponse(res, newYear);
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        sendBadRequestErrorResponse(res, err);
     }
 };
 
