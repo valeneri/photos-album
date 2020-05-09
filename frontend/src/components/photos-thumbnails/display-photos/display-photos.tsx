@@ -14,7 +14,7 @@ const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
             return (
                 <div key={photo._id} className="photos-wrapper">
                     <img src={`http://localhost:8080/static/photos/${photo.path}`} width="150px" height="150px" />
-                    <span>{photo.name}</span><br />
+                    {/* <span>{photo.name}</span><br /> */}
                 </div>
             )
         })

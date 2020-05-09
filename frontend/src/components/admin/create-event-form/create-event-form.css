@@ -2,5 +2,16 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-    padding: 5%;
+    padding: 2%;
+}
+
+.required-fields {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid white;
+}
+
+.optional-fields {
+    display: flex;
+    flex-direction: column;
 }
