@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { YearEvents, Event } from "../../../pages/events/events-page";
+import React, { useState } from "react";
+import { YearEvents } from "../../../pages/events/events-page";
 import EventUI from "../event-ui/event-ui";
-import "./negative.css";
 import HorizontalScroll from "../horizontal-scroll/horizontal-scroll";
+import "./negative.css";
 
 // Negative props interface declaration
 interface NegativeProps {
