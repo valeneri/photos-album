@@ -71,7 +71,7 @@ const Table = ({ yearsEvents, handleCreateEvent }: TableProps) => {
                                 <span>{category.xmas}</span>
                             </td>
                             <td>
-                                <span> {category.abstract}</span>
+                                <span>{category.abstract}</span>
                             </td>
                             <td>
                                 <span>{category.other}</span>
