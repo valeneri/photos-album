@@ -1,14 +1,27 @@
 .photos-wrapper {
-    max-width: 300px;
-    display: flex;
-    flex-direction: column;
+    /* max-width: 300px; */
+    /* display: flex;
+    flex-direction: column; */
+    height: 150px;
+    width: 150px;
+    overflow: hidden;
     margin: 1%;
 }
 
 .display-photos {
-   
     max-width: 100%;
     height:100%;
     display: grid;
     grid-template-columns: repeat( auto-fill, minmax(150px, 1fr) );
+    /* gap: 0.1%; */
+}
+
+.photos {
+    object-fit: cover;
+    width:150px;
+    height:150px;
+}
+
+span h3 {
+    color: red;
 }

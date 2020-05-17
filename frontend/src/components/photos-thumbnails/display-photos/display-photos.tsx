@@ -1,6 +1,7 @@
 import React from "react";
 import "./display-photos.css";
 import { Photo, Event } from "../../../pages/events/events-page";
+import { textDate } from '../../../utils/utils';
 
 // displayPhotos props interface declaration
 interface DisplayPhotosProps {
@@ -13,7 +14,7 @@ const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
         return photos.map((photo: Photo) => {
             return (
                 <div key={photo._id} className="photos-wrapper">
-                    <img src={`http://localhost:8080/static/photos/${photo.path}`} width="150px" height="150px" />
+                    <img className="photos" src={`http://localhost:8080/static/photos/${photo.path}`} />
                     {/* <span>{photo.name}</span><br /> */}
                 </div>
             )
@@ -21,8 +22,8 @@ const DisplayPhotos = ({ selectedEvent }: DisplayPhotosProps) => {
     }
 
     return (
-        <div style={{ border: `2px solid white`, marginBottom: `2%` }}>
-            <h3>{selectedEvent.title} {selectedEvent.full_date}</h3>
+        <div style={{ border: `2px solid white`, marginBottom: `1%`, marginTop: `1%` }}>
+            <span><h3>{selectedEvent.title}</h3> {textDate(selectedEvent.full_date)}</span>
             <div className="display-photos">
                 {displayEventPhotos(selectedEvent.photos)}
             </div>
