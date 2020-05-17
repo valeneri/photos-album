@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { YearEvents } from "../../pages/events/events-page";
 import Filters from "./filters/filters";
-import HorizontalScroll from "./horizontal-scroll/horizontal-scroll";
 import Negative from "./negative/negative";
 import "./timeline.css";
 
@@ -9,10 +8,13 @@ import "./timeline.css";
 interface TimelineProps {
   yearsEventsList: YearEvents[];
   setSelectedEvent: any;
+  setSelectedCategory: any;
+  categories: any[]
 }
 
-const Timeline = ({ yearsEventsList, setSelectedEvent }: TimelineProps) => {
+const Timeline = ({ yearsEventsList, setSelectedEvent, setSelectedCategory, categories }: TimelineProps) => {
 
+  const selectedYears = yearsEventsList.filter(year => { return year.selected });
 
   return (
     <div className="timeline">
@@ -20,23 +22,13 @@ const Timeline = ({ yearsEventsList, setSelectedEvent }: TimelineProps) => {
         <div className="negative-component">
           <Negative yearsEventsList={yearsEventsList} setSelectedEvent={setSelectedEvent} />
         </div>
-        {/* <div className="selectors">
-          <div className="selected-years-component">
-            <p>Sélection :
-              {
-                yearsEventsList.map((year: YearEvents) => {
-                  return year.selected && <span key={year._id}>{year.date} </span>
-                })
-              }
-            </p>
-          </div>
-          <div className="zoom-component">
-            {/* <HorizontalScroll maxRange={maxRange()} setNegativeTranslation={translateEvents} /> 
-          </div>
+        <div className="selectors">
           <div className="filters-component">
-            <Filters />
+            {selectedYears.length > 0 &&
+              <Filters categories={categories} setSelectedCategory={setSelectedCategory} />
+            }
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   )

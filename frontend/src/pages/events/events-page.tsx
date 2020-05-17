@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import * as api from "../../api/api";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
-import Timeline from "../../components/timeline/timeline";
+import { sortByDateAsc } from '../../utils/utils';
 import "./events-page.css";
+import Timeline from "../../components/timeline/timeline";
 
 export interface Event {
     _id: string,
@@ -35,14 +36,27 @@ export interface YearEvents {
     isEvent: boolean,
     eventsNumber: number,
     events: Event[],
-    photos: Photo[]
+    photos: Photo[],
 }
 
-
 const EventsPage = () => {
+    const initCategories = [
+        { value: 0, label: "Anniversaires", name: "birthday", selected: false },
+        { value: 0, label: "Vacances", name: "holidays", selected: false },
+        { value: 0, label: "Noël", name: "xmas", selected: false },
+        { value: 0, label: "Abstrait", name: "abstract", selected: false },
+        { value: 0, label: "Autre", name: "other", selected: false },
+        { value: 0, label: "Non classé", name: "untagged", selected: false },
+        { value: 0, label: "Total", name: "total", selected: false }
+    ];
+
     /*  states declaration */
-    // set years full list
+    // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
+    // set events categories
+    const [categories, setCategories] = useState<any[]>(initCategories);
+    // set filtered years events list
+    const [filteredYearsEventsList, setFilteredYearsEventsList] = useState<YearEvents[]>([]);
 
     // Get all years without associated events on component mounting
     useEffect(() => {
@@ -55,37 +69,88 @@ const EventsPage = () => {
 
     // handle actions on select, base on event category
     const handleSelectEvent = (event: any) => {
-        if (event.category === "year") {
-            selectYear(event);
-        }
-        else {
-            selectEvent(event);
-        }
+        event.category === "year" ? selectYear(event) : selectEvent(event);
     };
 
-    // Get events in the selected year and toggle selected flag 
+    // handle categories on select, then filter events 
+    const handleSelectCategory = (category: any) => {
+        const categoriesCopy = [...categories];
+        const index = categories.findIndex(cat => cat.name === category.name);
+        if (index !== -1) {
+            categoriesCopy[index].selected = !categoriesCopy[index].selected;
+        }
+
+        const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
+
+        // if "all" button selected, select all others
+        // else if all others selected, select "all" button
+        // else deselect "all" button
+        if (category.name === 'total') {
+            categoriesCopy.map((cat: any) => cat.selected = category.selected);
+        } else if (categoriesWithoutTotal.every((cat: any) => cat.selected)) {
+            categoriesCopy[6].selected = true;
+        } else {
+            categoriesCopy[6].selected = false;
+        }
+
+        setCategories(categoriesCopy);
+        filterByCategories();
+    }
+
+    // filters events based upon selected categories
+    const filterByCategories = () => {
+        // copy full years events list as new array 
+        let selectedYears: YearEvents[] = JSON.parse(JSON.stringify(yearsEventsList));
+        selectedYears = selectedYears.filter(year => year.selected);
+
+        let selectedEventsCategories: YearEvents[];
+
+        // if "all" categories button selected, display all
+        if (categories[6].selected) {
+            selectedEventsCategories = selectedYears;
+        } else {
+            const selectedCategories = categories.filter(cat => cat.selected);
+            selectedEventsCategories = selectedYears.map((year: YearEvents) => {
+                year.events = year.events.filter(event => {
+                    const found = selectedCategories.filter(cat => cat.name === event.category);
+                    if (found.length > 0) {
+                        return event
+                    }
+                })
+                return year;
+            })
+        }
+        setFilteredYearsEventsList(selectedEventsCategories);
+    }
+
+    // Get events in the selected year, toggle selected flag then count events categories & filter
     const selectYear = async (yearEvents: YearEvents) => {
-        const index = yearsEventsList.findIndex(event => event._id === yearEvents._id);
+        const index = yearsEventsList.findIndex(year => year._id === yearEvents._id);
         const copyYearsEventsList = [...yearsEventsList];
 
         if (!yearEvents.events && index != -1) {
             const response = await api.getEventsByYear(yearEvents.date);
             copyYearsEventsList[index]["events"] = response.data;
+
+            sortByDateAsc(copyYearsEventsList[index].events);
         }
 
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
+
+        countCategories(copyYearsEventsList[index]);
+
+        if (!copyYearsEventsList[index].selected) {
+            copyYearsEventsList[index].events.forEach((event: Event) => {
+                event.selected = false;
+            })
+        }
         setYearsEventsList(copyYearsEventsList);
+        filterByCategories();
     }
 
     // Get event's photos and toggle selected flag 
     const selectEvent = async (event: Event) => {
         const copyYearsEventsList = [...yearsEventsList];
-
-        if (!event.photos) {
-            const tag = `${event.title}_${event.full_date}`;
-            const response = await api.getPhotosByEvent(tag);
-            event["photos"] = response.data;
-        }
 
         copyYearsEventsList.forEach(yearEvents => {
             if (yearEvents.events) {
@@ -98,18 +163,59 @@ const EventsPage = () => {
         setYearsEventsList(copyYearsEventsList);
     }
 
+    // count year events categories, incremented or decremented if year is selected or not
+    const countCategories = (year: YearEvents) => {
+        const categoriesCopy = [...categories];
+        const selected = year.selected;
+
+        year.events.forEach((event: Event) => {
+            switch (event.category) {
+                case "birthday":
+                    selected ? categoriesCopy[0].value++ : categoriesCopy[0].value--;
+                    break;
+                case "holidays":
+                    selected ? categoriesCopy[1].value++ : categoriesCopy[1].value--;
+                    break;
+                case "xmas":
+                    selected ? categoriesCopy[2].value++ : categoriesCopy[2].value--;
+                    break;
+                case "abstract":
+                    selected ? categoriesCopy[3].value++ : categoriesCopy[3].value--;
+                    break;
+                case "other":
+                    selected ? categoriesCopy[4].value++ : categoriesCopy[4].value--;
+                    break;
+                default:
+                    selected ? categoriesCopy[5].value++ : categoriesCopy[5].value--;
+                    break;
+            }
+        });
+        let sum = 0;
+        for (let i = 0; i < categoriesCopy.length - 1; i++) {
+            sum += categoriesCopy[i].value;
+        }
+        categoriesCopy[6].value = sum;
+        setCategories(categoriesCopy);
+    }
+
     return (
         <div className="main-wrapper">
             <div className="timeline-component">
                 {
                     yearsEventsList.length > 0 &&
-                    <Timeline yearsEventsList={yearsEventsList} setSelectedEvent={handleSelectEvent}></Timeline>
+                    <Timeline yearsEventsList={yearsEventsList}
+                        setSelectedEvent={handleSelectEvent}
+                        categories={categories}
+                        setSelectedCategory={handleSelectCategory}
+                    />
                 }
             </div>
             <div className="photos-thumbnails-component">
                 {
-                    yearsEventsList.map((year: YearEvents) => {
-                        if (year.selected) {
+                    categories &&
+                    categories.filter(cat => cat.selected).length > 0 &&
+                    filteredYearsEventsList.map((year: YearEvents) => {
+                        if (year.selected && year.events.length > 0) {
                             return (
                                 <div className="photos-thumbnails" key={year._id}>
                                     <PhotosThumbnails selectedYear={year} setSelectedEvent={handleSelectEvent} />
