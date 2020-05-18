@@ -56,8 +56,6 @@ const EventsPage = () => {
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
     // set events categories
     const [categories, setCategories] = useState<any[]>(initCategories);
-    // set filtered years events list
-    const [filteredYearsEventsList, setFilteredYearsEventsList] = useState<YearEvents[]>([]);
 
     // Get all years without associated events on component mounting
     useEffect(() => {
@@ -94,33 +92,6 @@ const EventsPage = () => {
             categoriesCopy[6].selected = false;
         }
         setCategories(categoriesCopy);
-        filterByCategories();
-    }
-
-    // filters events based upon selected categories
-    const filterByCategories = () => {
-        // copy full years events list as new array 
-        let selectedYears: YearEvents[] = JSON.parse(JSON.stringify(yearsEventsList));
-        selectedYears = selectedYears.filter(year => year.selected);
-
-        let selectedEventsCategories: YearEvents[];
-
-        // if "all" categories button selected, display all
-        if (categories[6].selected) {
-            selectedEventsCategories = selectedYears;
-        } else {
-            const selectedCategories = categories.filter(cat => cat.selected);
-            selectedEventsCategories = selectedYears.map((year: YearEvents) => {
-                year.events = year.events.filter(event => {
-                    const found = selectedCategories.filter(cat => cat.name === event.category);
-                    if (found.length > 0) {
-                        return event
-                    }
-                })
-                return year;
-            })
-        }
-        setFilteredYearsEventsList(selectedEventsCategories);
     }
 
     // Get events in the selected year, toggle selected flag then count events categories & filter
@@ -145,7 +116,6 @@ const EventsPage = () => {
             })
         }
         setYearsEventsList(copyYearsEventsList);
-        filterByCategories();
     }
 
     // Get event's photos and toggle selected flag 
@@ -215,11 +185,11 @@ const EventsPage = () => {
                 {
                     categories &&
                     categories.filter(cat => cat.selected).length > 0 &&
-                    filteredYearsEventsList.map((year: YearEvents) => {
+                    yearsEventsList.map((year: YearEvents) => {
                         if (year.selected && year.events.length > 0) {
                             return (
                                 <div className="photos-thumbnails" key={year._id}>
-                                    <PhotosThumbnails selectedYear={year} setSelectedEvent={handleSelectEvent} />
+                                    <PhotosThumbnails selectedYear={year} setSelectedEvent={handleSelectEvent} categories={categories} />
                                 </div>
                             )
                         }

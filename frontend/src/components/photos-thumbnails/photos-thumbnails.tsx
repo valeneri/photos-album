@@ -8,20 +8,15 @@ import "./photos-thumbnails.css";
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents,
     setSelectedEvent: any,
-    // categories: any[]
+    categories: any[]
 }
 
-const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsProps) => {
-    const [orderedEvents, setOrderedEvents] = useState<Event[]>([]);
-
-    useEffect(() => {
-        setOrderedEvents(selectedYear.events)
-    }, [selectedYear.events]);
+const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: PhotosThumbnailsProps) => {
+    const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
 
     // display selected event photos, or "click me" if no event is selected
-    const displayPhotos = (event: Event) => {
-        console.log("isSelectedCategory called", event)
-        return (<div key={event._id} style={{ display: (event.selected ? 'block' : 'none') }}>
+    const displayPhotos = (event: Event, isShowed: boolean) => {
+        return (<div key={event._id} style={{ display: (isShowed && event.selected ? 'block' : 'none') }}>
             <DisplayPhotos selectedEvent={event} />
         </div>)
     }
@@ -34,7 +29,6 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
             const response = await api.getPhotosByEvent(tag);
             event["photos"] = response.data;
         }
-
         event.selected = !event.selected;
 
         setSelectedEvent(event);
@@ -65,21 +59,24 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
                         <h5>Afficher tous</h5>
                     </div>
                     {selectedYear.events && selectedYear.events.map(event => {
-                        return (
-                            <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
+                        console.log(categories)
+                        if (categories.filter(cat => cat.selected).find((category: any) => category.name === event.category)) {
+                            return (
+                                <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
 
-                                {/* <p> */}
-                                <span className="title">{event.title}</span>
-                                <br />
-                                <span>
-                                    {textDate(event.full_date)}
-                                    {/* </br> */}
-                                    <small> ({event.photosNumber} photos)</small>
-                                </span>
+                                    {/* <p> */}
+                                    <span className="title">{event.title}</span>
+                                    <br />
+                                    <span>
+                                        {textDate(event.full_date)}
+                                        {/* </br> */}
+                                        <small> ({event.photosNumber} photos)</small>
+                                    </span>
 
-                                {/* </p> */}
-                            </div>
-                        )
+                                    {/* </p> */}
+                                </div>
+                            )
+                        }
                     })
                     }
                 </div>
@@ -89,9 +86,9 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
                     {
                         orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
                             orderedEvents.map((event: Event) => {
+                                const isShowed = categories.filter(cat => cat.selected).find((category: any) => category.name === event.category);
                                 if (event.photos) {
-                                    console.log("called")
-                                    return displayPhotos(event)
+                                    return displayPhotos(event, isShowed)
                                 }
                             })
                             : <h3>Cliquez sur un évènement pour afficher les photos</h3>
