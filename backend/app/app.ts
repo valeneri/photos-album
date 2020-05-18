@@ -1,38 +1,11 @@
-import express, { response, Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
+import express, { NextFunction, Request, Response } from "express";
 import { router as apiV1 } from "./routes/index";
-
+import { connectToDb } from './db';
 
 const app = express();
 
-/* mongo connection */
-const mongoUrl = 'mongodb://randuser:randpw@mongo:27017/souvenirs-dev';
-
-// Connect to MongoDB
-const connecToMongo = async () => {
-    let db = null;
-    try {
-        await mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
-        console.log("connection to mongo opened");
-
-        db = mongoose.connection;
-        db.once('open', () => {
-            console.log("connected to mongo!");
-        })
-    } catch (err) {
-        (db) && db.close();
-        db.on('error', console.error.bind(console, 'connection error:'));
-        throw err;
-    }
-}
-
-connecToMongo();
-// open connection
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', () => {
-//     console.log("connected to mongo!");
-// });
+// connection to mongodb
+connectToDb();
 
 /**** express configuration ****/
 app.set('port', process.env.port || 8080);
