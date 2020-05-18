@@ -15,6 +15,7 @@ export interface Event {
     location: string,
     selected: boolean,
     photosNumber: number,
+    priority: number,
     photos: any[]
 }
 
@@ -92,7 +93,6 @@ const EventsPage = () => {
         } else {
             categoriesCopy[6].selected = false;
         }
-
         setCategories(categoriesCopy);
         filterByCategories();
     }
@@ -160,6 +160,7 @@ const EventsPage = () => {
                 }
             }
         })
+
         setYearsEventsList(copyYearsEventsList);
     }
 

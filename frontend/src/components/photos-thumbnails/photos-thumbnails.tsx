@@ -7,17 +7,20 @@ import "./photos-thumbnails.css";
 
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents,
-    setSelectedEvent: any
+    setSelectedEvent: any,
+    // categories: any[]
 }
 
 const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsProps) => {
+    const [orderedEvents, setOrderedEvents] = useState<Event[]>([]);
 
-    // set selected events order
-    const [showOrderedEvents, setShowOrderedEvents] = useState<Event[]>([]);
-
+    useEffect(() => {
+        setOrderedEvents(selectedYear.events)
+    }, [selectedYear.events]);
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event) => {
+        console.log("isSelectedCategory called", event)
         return (<div key={event._id} style={{ display: (event.selected ? 'block' : 'none') }}>
             <DisplayPhotos selectedEvent={event} />
         </div>)
@@ -33,8 +36,9 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
         }
 
         event.selected = !event.selected;
-        setEventsOrder(event);
+
         setSelectedEvent(event);
+        setEventsOrder(event);
     }
 
     /* set display events order.
@@ -43,20 +47,10 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
         else events list is empty, just push it 
     */
     const setEventsOrder = (event: Event) => {
-        let copyEvents;
-        showOrderedEvents.length > 0 ? copyEvents = [...showOrderedEvents] : copyEvents = showOrderedEvents;
-
-        const isAlreadyIn = copyEvents.findIndex((elem: Event) => { return elem._id === event._id });
-
-        if (copyEvents.length > 0 && event.selected && isAlreadyIn !== -1) {
-            copyEvents = copyEvents.filter((elem: Event) => { return elem._id !== event._id });
-            copyEvents.unshift(event);
-        } else if (copyEvents.length > 0 && event.selected && isAlreadyIn === -1) {
-            copyEvents.unshift(event);
-        } else if (copyEvents.length === 0) {
-            copyEvents.push(event);
-        }
-        setShowOrderedEvents(copyEvents);
+        let copyEvents = [...orderedEvents];
+        copyEvents = copyEvents.filter((evt: Event) => evt._id !== event._id);
+        copyEvents.unshift(event);
+        setOrderedEvents(copyEvents);
     }
 
     return (
@@ -93,9 +87,10 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent }: PhotosThumbnailsPr
             {
                 <div className="thumbnails-wrapper">
                     {
-                        showOrderedEvents.filter(evt => { return evt.selected }).length > 0 ?
-                            showOrderedEvents.map((event: Event) => {
+                        orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
+                            orderedEvents.map((event: Event) => {
                                 if (event.photos) {
+                                    console.log("called")
                                     return displayPhotos(event)
                                 }
                             })
