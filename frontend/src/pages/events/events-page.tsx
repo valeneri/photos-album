@@ -72,26 +72,11 @@ const EventsPage = () => {
     };
 
     // handle categories on select, then filter events 
-    const handleSelectCategory = (category: any) => {
-        const categoriesCopy = [...categories];
-        const index = categories.findIndex(cat => cat.name === category.name);
-        if (index !== -1) {
-            categoriesCopy[index].selected = !categoriesCopy[index].selected;
-        }
-
-        const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
-
+    const handleSelectCategory = (categories: any[]) => {
         // if "all" button selected, select all others
         // else if all others selected, select "all" button
         // else deselect "all" button
-        if (category.name === 'total') {
-            categoriesCopy.map((cat: any) => cat.selected = category.selected);
-        } else if (categoriesWithoutTotal.every((cat: any) => cat.selected)) {
-            categoriesCopy[6].selected = true;
-        } else {
-            categoriesCopy[6].selected = false;
-        }
-        setCategories(categoriesCopy);
+        autoSelectAllCategories(categories);
     }
 
     // Get events in the selected year, toggle selected flag then count events categories & filter
@@ -108,13 +93,14 @@ const EventsPage = () => {
 
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
 
-        countCategories(copyYearsEventsList[index]);
+        const categories = countCategories(copyYearsEventsList[index]);
+        autoSelectAllCategories(categories);
 
-        if (!copyYearsEventsList[index].selected) {
-            copyYearsEventsList[index].events.forEach((event: Event) => {
-                event.selected = false;
-            })
-        }
+        // if (!copyYearsEventsList[index].selected) {
+        //     copyYearsEventsList[index].events.forEach((event: Event) => {
+        //         event.selected = false;
+        //     })
+        // }
         setYearsEventsList(copyYearsEventsList);
     }
 
@@ -166,8 +152,25 @@ const EventsPage = () => {
             sum += categoriesCopy[i].value;
         }
         categoriesCopy[6].value = sum;
+        // setCategories(categoriesCopy);
+        return categoriesCopy;
+    }
+
+    const autoSelectAllCategories = (categories: any[]) => {
+        const categoriesCopy = [...categories];
+        const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
+
+        // if "all" button selected, select all others
+        // else if all others selected, select "all" button
+        // else deselect "all" button
+        if (categoriesWithoutTotal.every((category: any) => category.selected)) {
+            categoriesCopy[6].selected = true;
+        } else {
+            categoriesCopy[6].selected = false;
+        }
         setCategories(categoriesCopy);
     }
+
 
     return (
         <div className="main-wrapper">

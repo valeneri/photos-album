@@ -13,6 +13,7 @@ interface PhotosThumbnailsProps {
 
 const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: PhotosThumbnailsProps) => {
     const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
+    // const [hasEvents, setHasEvents] = useState<boolean>();
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event, isShowed: boolean) => {
@@ -47,53 +48,66 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
         setOrderedEvents(copyEvents);
     }
 
+    const checkEvents = () => {
+        const selectedCategories = categories.filter(cat => cat.selected);
+        const events = selectedYear.events.filter((event: Event) => {
+            if (selectedCategories.find((category: any) => category.name === event.category)) {
+                return event;
+            }
+        })
+        return events.length > 0 ? true : false;
+    }
+
+    const displayEventsTab = () => {
+        const selectedCategories = categories.filter(cat => cat.selected);
+
+        const events: Event[] = selectedYear.events;
+        return events.map((event: Event) => {
+            if (selectedCategories.find((category: any) => category.name === event.category)) {
+                return (
+                    <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
+                        <span className="title">{event.title}</span>
+                        <br />
+                        <span>
+                            {textDate(event.full_date)}
+                            <small> ({event.photosNumber} photos)</small>
+                        </span>
+                    </div>
+                )
+            }
+        })
+    }
+
+
     return (
         <div className="full-year-wrapper">
             <div className="year-details">
                 <h2>Année {selectedYear.date}</h2>
             </div>
-            <div className="year-tab">
-
-                <div className="events-tab-wrapper">
-                    <div className="event-tab-details display-all">
-                        <h5>Afficher tous</h5>
-                    </div>
-                    {selectedYear.events && selectedYear.events.map(event => {
-                        console.log(categories)
-                        if (categories.filter(cat => cat.selected).find((category: any) => category.name === event.category)) {
-                            return (
-                                <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
-
-                                    {/* <p> */}
-                                    <span className="title">{event.title}</span>
-                                    <br />
-                                    <span>
-                                        {textDate(event.full_date)}
-                                        {/* </br> */}
-                                        <small> ({event.photosNumber} photos)</small>
-                                    </span>
-
-                                    {/* </p> */}
-                                </div>
-                            )
-                        }
-                    })
-                    }
-                </div>
-            </div>
             {
-                <div className="thumbnails-wrapper">
-                    {
-                        orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
-                            orderedEvents.map((event: Event) => {
-                                const isShowed = categories.filter(cat => cat.selected).find((category: any) => category.name === event.category);
-                                if (event.photos) {
-                                    return displayPhotos(event, isShowed)
-                                }
-                            })
-                            : <h3>Cliquez sur un évènement pour afficher les photos</h3>
-                    }
-                </div>
+                checkEvents() ?
+                    <div>
+                        <div className="year-tab">
+                            <div className="events-tab-wrapper">
+                                {displayEventsTab()}
+                            </div>
+                        </div>
+                        <div className="thumbnails-wrapper">
+                            {
+                                orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
+                                    orderedEvents.map((event: Event) => {
+                                        const isShowed = categories.filter(cat => cat.selected).find((category: any) => category.name === event.category);
+                                        if (event.photos) {
+                                            return displayPhotos(event, isShowed)
+                                        }
+                                    })
+                                    : <h3>Cliquez sur un évènement pour afficher les photos</h3>
+                            }
+                        </div>
+                    </div> :
+                    <div>
+                        <h3>Aucun évènement</h3>
+                    </div>
             }
         </div>
     )

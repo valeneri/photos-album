@@ -10,13 +10,21 @@ interface FiltersProps {
 const Filters = ({ categories, setSelectedCategory }: FiltersProps) => {
 
     const handleSelectCategory = (category: any) => {
-        setSelectedCategory(category);
+        const categoriesCopy = categories;
+        const index = categoriesCopy.findIndex((cat: any) => cat.name === category.name);
+        categoriesCopy[index].selected = !categoriesCopy[index].selected;
+
+        // if "all" button selected, select/deselect all others
+        if (category.name === 'total') {
+            categoriesCopy.filter((cat: any) => cat.value > 0).map(cat => cat.selected = category.selected);
+        }
+        setSelectedCategory(categoriesCopy)
     }
 
     return (
         <div className="categories-wrapper">
             {categories[6] && categories[6].value > 0 &&
-                <div className={`all-categories ${categories[6].selected ? 'selected' : ''}`} onClick={() => setSelectedCategory(categories[6])}>
+                <div className={`all-categories ${categories[6].selected ? 'selected' : ''}`} onClick={() => handleSelectCategory(categories[6])}>
                     <span>Toutes ({categories[6].value})</span>
                 </div>}
             <div className="categories-details">
