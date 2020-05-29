@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Event, YearEvents } from "../../pages/events/events-page";
+import { Event, YearEvents, Category } from "../../pages/events/events-page";
 import DisplayPhotos from "./display-photos/display-photos";
 import * as api from "../../api/api";
 import { textDate } from '../../utils/utils';
@@ -8,12 +8,11 @@ import "./photos-thumbnails.css";
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents,
     setSelectedEvent: any,
-    categories: any[]
+    categories: Category[]
 }
 
 const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: PhotosThumbnailsProps) => {
     const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
-    // const [hasEvents, setHasEvents] = useState<boolean>();
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event, isShowed: boolean) => {
@@ -51,7 +50,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
     const checkEvents = () => {
         const selectedCategories = categories.filter(cat => cat.selected);
         const events = selectedYear.events.filter((event: Event) => {
-            if (selectedCategories.find((category: any) => category.name === event.category)) {
+            if (selectedCategories.find((category: Category) => category.name === event.category)) {
                 return event;
             }
         })
@@ -59,11 +58,11 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
     }
 
     const displayEventsTab = () => {
-        const selectedCategories = categories.filter(cat => cat.selected);
+        const selectedCategories = categories.filter((category: Category) => category.selected);
 
         const events: Event[] = selectedYear.events;
         return events.map((event: Event) => {
-            if (selectedCategories.find((category: any) => category.name === event.category)) {
+            if (selectedCategories.find((category: Category) => category.name === event.category)) {
                 return (
                     <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
                         <span className="title">{event.title}</span>
@@ -96,7 +95,11 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
                             {
                                 orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
                                     orderedEvents.map((event: Event) => {
-                                        const isShowed = categories.filter(cat => cat.selected).find((category: any) => category.name === event.category);
+                                        let isShowed: boolean;
+                                        categories.filter((category: Category) => category.selected).find((category: Category) => category.name === event.category) ?
+                                            isShowed = true :
+                                            isShowed = false;
+
                                         if (event.photos) {
                                             return displayPhotos(event, isShowed)
                                         }

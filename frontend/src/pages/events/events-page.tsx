@@ -15,7 +15,6 @@ export interface Event {
     location: string,
     selected: boolean,
     photosNumber: number,
-    priority: number,
     photos: any[]
 }
 
@@ -40,8 +39,15 @@ export interface YearEvents {
     photos: Photo[],
 }
 
+export interface Category {
+    value: number,
+    label: string,
+    name: string,
+    selected: boolean
+}
+
 const EventsPage = () => {
-    const initCategories = [
+    const initCategories: Category[] = [
         { value: 0, label: "Anniversaires", name: "birthday", selected: false },
         { value: 0, label: "Vacances", name: "holidays", selected: false },
         { value: 0, label: "Noël", name: "xmas", selected: false },
@@ -55,7 +61,7 @@ const EventsPage = () => {
     // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
     // set events categories
-    const [categories, setCategories] = useState<any[]>(initCategories);
+    const [categories, setCategories] = useState<Category[]>(initCategories);
 
     // Get all years without associated events on component mounting
     useEffect(() => {
@@ -72,10 +78,7 @@ const EventsPage = () => {
     };
 
     // handle categories on select, then filter events 
-    const handleSelectCategory = (categories: any[]) => {
-        // if "all" button selected, select all others
-        // else if all others selected, select "all" button
-        // else deselect "all" button
+    const handleSelectCategory = (categories: Category[]) => {
         autoSelectAllCategories(categories);
     }
 
@@ -152,11 +155,10 @@ const EventsPage = () => {
             sum += categoriesCopy[i].value;
         }
         categoriesCopy[6].value = sum;
-        // setCategories(categoriesCopy);
         return categoriesCopy;
     }
 
-    const autoSelectAllCategories = (categories: any[]) => {
+    const autoSelectAllCategories = (categories: Category[]) => {
         const categoriesCopy = [...categories];
         const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
 

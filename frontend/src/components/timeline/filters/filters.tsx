@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import "./filters.css";
-import { YearEvents, Event } from "../../../pages/events/events-page";
+import { YearEvents, Event, Category } from "../../../pages/events/events-page";
 
 interface FiltersProps {
-    categories: any[],
+    categories: Category[],
     setSelectedCategory: any
 }
 
 const Filters = ({ categories, setSelectedCategory }: FiltersProps) => {
 
-    const handleSelectCategory = (category: any) => {
+    const handleSelectCategory = (selectedCategory: Category) => {
         const categoriesCopy = categories;
-        const index = categoriesCopy.findIndex((cat: any) => cat.name === category.name);
+        const index = categoriesCopy.findIndex((category: Category) => category.name === selectedCategory.name);
         categoriesCopy[index].selected = !categoriesCopy[index].selected;
 
         // if "all" button selected, select/deselect all others
-        if (category.name === 'total') {
-            categoriesCopy.filter((cat: any) => cat.value > 0).map(cat => cat.selected = category.selected);
+        if (selectedCategory.name === 'total') {
+            categoriesCopy.filter((category: Category) => category.value > 0).map(category => category.selected = selectedCategory.selected);
         }
         setSelectedCategory(categoriesCopy)
     }
@@ -28,7 +28,7 @@ const Filters = ({ categories, setSelectedCategory }: FiltersProps) => {
                     <span>Toutes ({categories[6].value})</span>
                 </div>}
             <div className="categories-details">
-                {categories && categories.map((category: any, index: number) => {
+                {categories && categories.map((category: Category, index: number) => {
                     if (category.name !== "total" && category.value > 0) {
                         return (
                             <div key={index} className={`category ${category.selected ? 'selected' : ''}`} onClick={() => handleSelectCategory(category)}>

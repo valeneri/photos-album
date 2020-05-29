@@ -19,7 +19,6 @@ const AdminPage = () => {
     }, []);
 
     const createEvent = (date: string) => {
-        console.log("called ?")
         setEventYear(date);
     }
 

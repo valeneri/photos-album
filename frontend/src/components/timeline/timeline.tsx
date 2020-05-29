@@ -1,5 +1,5 @@
 import React from "react";
-import { YearEvents } from "../../pages/events/events-page";
+import { YearEvents, Category } from "../../pages/events/events-page";
 import Filters from "./filters/filters";
 import Negative from "./negative/negative";
 import "./timeline.css";
@@ -9,7 +9,7 @@ interface TimelineProps {
   yearsEventsList: YearEvents[];
   setSelectedEvent: any;
   setSelectedCategory: any;
-  categories: any[]
+  categories: Category[]
 }
 
 const Timeline = ({ yearsEventsList, setSelectedEvent, setSelectedCategory, categories }: TimelineProps) => {
