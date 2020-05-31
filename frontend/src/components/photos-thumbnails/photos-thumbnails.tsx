@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Event, YearEvents, Category } from "../../pages/events/events-page";
-import DisplayPhotos from "./display-photos/display-photos";
+import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-thumbnails";
 import * as api from "../../api/api";
 import { textDate } from '../../utils/utils';
 import "./photos-thumbnails.css";
@@ -8,29 +8,28 @@ import "./photos-thumbnails.css";
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents,
     setSelectedEvent: any,
-    categories: Category[]
+    categories: Category[],
+    setSelectedPhoto: any,
 }
 
-const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: PhotosThumbnailsProps) => {
+const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories, setSelectedPhoto }: PhotosThumbnailsProps) => {
     const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event, isShowed: boolean) => {
         return (<div key={event._id} style={{ display: (isShowed && event.selected ? 'block' : 'none') }}>
-            <DisplayPhotos selectedEvent={event} />
+            <DisplayPhotosThumbnails selectedEvent={event} setSelectedPhoto={setSelectedPhoto} />
         </div>)
     }
 
     // get selected event photos if there aren't any already, then toggle selected flag
     const handleSelectedEvent = async (event: Event) => {
-
         if (!event.photos) {
             const tag = `${event.title}_${event.full_date}`;
             const response = await api.getPhotosByEvent(tag);
             event["photos"] = response.data;
         }
         event.selected = !event.selected;
-
         setSelectedEvent(event);
         setEventsOrder(event);
     }
@@ -47,6 +46,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
         setOrderedEvents(copyEvents);
     }
 
+    // check if there's event in year in order to display them
     const checkEvents = () => {
         const selectedCategories = categories.filter(cat => cat.selected);
         const events = selectedYear.events.filter((event: Event) => {
@@ -57,10 +57,11 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories }: Photos
         return events.length > 0 ? true : false;
     }
 
+    // display events in a tab
     const displayEventsTab = () => {
         const selectedCategories = categories.filter((category: Category) => category.selected);
-
         const events: Event[] = selectedYear.events;
+
         return events.map((event: Event) => {
             if (selectedCategories.find((category: Category) => category.name === event.category)) {
                 return (

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as api from "../../api/api";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
+import Timeline from "../../components/timeline/timeline";
 import { sortByDateAsc } from '../../utils/utils';
 import "./events-page.css";
-import Timeline from "../../components/timeline/timeline";
+import { usePhotosModal } from "../../hooks/use-photos-modal";
 
 export interface Event {
     _id: string,
@@ -62,6 +63,12 @@ const EventsPage = () => {
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
     // set events categories
     const [categories, setCategories] = useState<Category[]>(initCategories);
+    // set selected thumbnails photo index
+    const [startIndex, setStartIndex] = useState<number>(-1);
+    // set selected thumbnails event
+    const [displayedEvent, setDisplayedEvent] = useState<Event>();
+    // photo modal hook
+    const { show, RenderPhotosModal } = usePhotosModal();
 
     // Get all years without associated events on component mounting
     useEffect(() => {
@@ -119,7 +126,6 @@ const EventsPage = () => {
                 }
             }
         })
-
         setYearsEventsList(copyYearsEventsList);
     }
 
@@ -158,6 +164,7 @@ const EventsPage = () => {
         return categoriesCopy;
     }
 
+    // autoselect or not "total" category
     const autoSelectAllCategories = (categories: Category[]) => {
         const categoriesCopy = [...categories];
         const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
@@ -173,6 +180,17 @@ const EventsPage = () => {
         setCategories(categoriesCopy);
     }
 
+    // pass event photos and selected photo index on modal when selecting photo
+    const handleSelectedPhoto = (photo: Photo, event: Event) => {
+        if (event && event.photos.length > 0) {
+            const index = event.photos.findIndex((elem: Photo) => elem._id === photo._id);
+            if (index !== -1) {
+                setStartIndex(index);
+                setDisplayedEvent(event);
+                show();
+            }
+        }
+    }
 
     return (
         <div className="main-wrapper">
@@ -194,12 +212,25 @@ const EventsPage = () => {
                         if (year.selected && year.events.length > 0) {
                             return (
                                 <div className="photos-thumbnails" key={year._id}>
-                                    <PhotosThumbnails selectedYear={year} setSelectedEvent={handleSelectEvent} categories={categories} />
+                                    <PhotosThumbnails
+                                        selectedYear={year}
+                                        setSelectedEvent={handleSelectEvent}
+                                        categories={categories}
+                                        setSelectedPhoto={handleSelectedPhoto}
+                                    />
                                 </div>
                             )
                         }
                     })
                 }
+            </div>
+            <div className="photos-viewer">
+                {
+                    displayedEvent &&
+                    startIndex >= 0 &&
+                    <RenderPhotosModal photos={displayedEvent.photos} index={startIndex} />
+                }
+                <div id="modal-root" />
             </div>
         </div>
     )
