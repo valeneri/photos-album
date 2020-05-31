@@ -1,5 +1,5 @@
 import React from "react";
-import useCustomForm from "../../../hooks/custom-form-hook";
+import useCustomForm from "../../../hooks/use-custom-form";
 import * as api from "../../../api/api";
 
 import "./create-event-form.css";
