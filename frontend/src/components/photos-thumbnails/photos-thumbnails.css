@@ -20,11 +20,16 @@
     /* background-color: #484e5777; */
 }
 
+.year-header {
+    width: 100%;
+    display: flex;
+}
+
 /* year detail */
 .year-details {
-    width:25%;
-    height: 50px;
-    color: red;
+    width:20%;
+    height: 70px;
+    /* color: red; */
     text-align: left;
     align-items: left;
     padding-left: 2%;
@@ -92,4 +97,21 @@
     margin-bottom: 1%;
     margin-top: 0;
     text-align: center;
+}
+
+
+/************* SELECTORS *************/
+
+/* filters components */
+.filters-component {
+    /* padding-left: 2%; */
+    width: 80%;
+    height: 100%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    display: flex;
+    align-self: center;
+    align-content: center;
+    /* padding-left: 10%; */
+    /* flex-direction: column; */
 }

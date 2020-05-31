@@ -1,6 +1,6 @@
 /******************** TIMELINE ******************/
 .timeline {
-    height: 320px;
+    height: 220px;
     background-color: white;
     color: black;
 }
@@ -17,21 +17,3 @@
 }
 
 
-/************* SELECTORS *************/
-.selectors {
-    min-height: 100px;
-    /* max-height: 10%; */
-    display: flex;
-}
-
-/* filters components */
-.filters-component {
-    /* padding-left: 2%; */
-    width: 60%;
-    height: 100%;
-    display: flex;
-    align-self: center;
-    align-content: center;
-    padding-left: 20%;
-    /* flex-direction: column; */
-}

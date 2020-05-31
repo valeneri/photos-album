@@ -48,21 +48,10 @@ export interface Category {
 }
 
 const EventsPage = () => {
-    const initCategories: Category[] = [
-        { value: 0, label: "Anniversaires", name: "birthday", selected: false },
-        { value: 0, label: "Vacances", name: "holidays", selected: false },
-        { value: 0, label: "Noël", name: "xmas", selected: false },
-        { value: 0, label: "Abstrait", name: "abstract", selected: false },
-        { value: 0, label: "Autre", name: "other", selected: false },
-        { value: 0, label: "Non classé", name: "untagged", selected: false },
-        { value: 0, label: "Total", name: "total", selected: false }
-    ];
 
     /*  states declaration */
     // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
-    // set events categories
-    const [categories, setCategories] = useState<Category[]>(initCategories);
     // set selected thumbnails photo index
     const [startIndex, setStartIndex] = useState<number>(-1);
     // set selected thumbnails event
@@ -84,11 +73,6 @@ const EventsPage = () => {
         event.category === "year" ? selectYear(event) : selectEvent(event);
     };
 
-    // handle categories on select, then filter events 
-    const handleSelectCategory = (categories: Category[]) => {
-        autoSelectAllCategories(categories);
-    }
-
     // Get events in the selected year, toggle selected flag then count events categories & filter
     const selectYear = async (yearEvents: YearEvents) => {
         const index = yearsEventsList.findIndex(year => year._id === yearEvents._id);
@@ -100,17 +84,7 @@ const EventsPage = () => {
 
             sortByDateAsc(copyYearsEventsList[index].events);
         }
-
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
-
-        const categories = countCategories(copyYearsEventsList[index]);
-        autoSelectAllCategories(categories);
-
-        // if (!copyYearsEventsList[index].selected) {
-        //     copyYearsEventsList[index].events.forEach((event: Event) => {
-        //         event.selected = false;
-        //     })
-        // }
         setYearsEventsList(copyYearsEventsList);
     }
 
@@ -127,57 +101,6 @@ const EventsPage = () => {
             }
         })
         setYearsEventsList(copyYearsEventsList);
-    }
-
-    // count year events categories, incremented or decremented if year is selected or not
-    const countCategories = (year: YearEvents) => {
-        const categoriesCopy = [...categories];
-        const selected = year.selected;
-
-        year.events.forEach((event: Event) => {
-            switch (event.category) {
-                case "birthday":
-                    selected ? categoriesCopy[0].value++ : categoriesCopy[0].value--;
-                    break;
-                case "holidays":
-                    selected ? categoriesCopy[1].value++ : categoriesCopy[1].value--;
-                    break;
-                case "xmas":
-                    selected ? categoriesCopy[2].value++ : categoriesCopy[2].value--;
-                    break;
-                case "abstract":
-                    selected ? categoriesCopy[3].value++ : categoriesCopy[3].value--;
-                    break;
-                case "other":
-                    selected ? categoriesCopy[4].value++ : categoriesCopy[4].value--;
-                    break;
-                default:
-                    selected ? categoriesCopy[5].value++ : categoriesCopy[5].value--;
-                    break;
-            }
-        });
-        let sum = 0;
-        for (let i = 0; i < categoriesCopy.length - 1; i++) {
-            sum += categoriesCopy[i].value;
-        }
-        categoriesCopy[6].value = sum;
-        return categoriesCopy;
-    }
-
-    // autoselect or not "total" category
-    const autoSelectAllCategories = (categories: Category[]) => {
-        const categoriesCopy = [...categories];
-        const categoriesWithoutTotal = categoriesCopy.slice(0, 6).filter((cat: any) => cat.value > 0);
-
-        // if "all" button selected, select all others
-        // else if all others selected, select "all" button
-        // else deselect "all" button
-        if (categoriesWithoutTotal.every((category: any) => category.selected)) {
-            categoriesCopy[6].selected = true;
-        } else {
-            categoriesCopy[6].selected = false;
-        }
-        setCategories(categoriesCopy);
     }
 
     // pass event photos and selected photo index on modal when selecting photo
@@ -199,15 +122,11 @@ const EventsPage = () => {
                     yearsEventsList.length > 0 &&
                     <Timeline yearsEventsList={yearsEventsList}
                         setSelectedEvent={handleSelectEvent}
-                        categories={categories}
-                        setSelectedCategory={handleSelectCategory}
                     />
                 }
             </div>
             <div className="photos-thumbnails-component">
                 {
-                    categories &&
-                    categories.filter(cat => cat.selected).length > 0 &&
                     yearsEventsList.map((year: YearEvents) => {
                         if (year.selected && year.events.length > 0) {
                             return (
@@ -215,7 +134,6 @@ const EventsPage = () => {
                                     <PhotosThumbnails
                                         selectedYear={year}
                                         setSelectedEvent={handleSelectEvent}
-                                        categories={categories}
                                         setSelectedPhoto={handleSelectedPhoto}
                                     />
                                 </div>

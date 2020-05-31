@@ -4,16 +4,95 @@ import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-
 import * as api from "../../api/api";
 import { textDate } from '../../utils/utils';
 import "./photos-thumbnails.css";
+import Filters from "../timeline/filters/filters";
 
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents,
     setSelectedEvent: any,
-    categories: Category[],
     setSelectedPhoto: any,
 }
 
-const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories, setSelectedPhoto }: PhotosThumbnailsProps) => {
+const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: PhotosThumbnailsProps) => {
+    const initCategories: Category[] = [
+        { value: 0, label: "Anniversaires", name: "birthday", selected: false },
+        { value: 0, label: "Vacances", name: "holidays", selected: false },
+        { value: 0, label: "Noël", name: "xmas", selected: false },
+        { value: 0, label: "Abstrait", name: "abstract", selected: false },
+        { value: 0, label: "Autre", name: "other", selected: false },
+        { value: 0, label: "Non classé", name: "untagged", selected: false },
+        { value: 0, label: "Total", name: "total", selected: false }
+    ];
+
+    // count year events categories
+    const countCategories = (year: YearEvents): Category[] => {
+        year.events.forEach((event: Event) => {
+            switch (event.category) {
+                case "birthday":
+                    initCategories[0].value++;
+                    break;
+                case "holidays":
+                    initCategories[1].value++;
+                    break;
+                case "xmas":
+                    initCategories[2].value++;
+                    break;
+                case "abstract":
+                    initCategories[3].value++;
+                    break;
+                case "other":
+                    initCategories[4].value++;
+                    break;
+                default:
+                    initCategories[5].value++;
+                    break;
+            }
+        });
+        let sum = 0;
+        for (let i = 0; i < initCategories.length - 1; i++) {
+            sum += initCategories[i].value;
+        }
+        initCategories[6].value = sum;
+        return initCategories;
+    }
+
+    // set events categories
+    const [categories, setCategories] = useState<Category[]>(countCategories(selectedYear));
+
     const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
+
+    // handle categories on select, then filter events 
+    const handleSelectCategory = (category: Category) => {
+        const categoriesCopy = [...categories];
+
+        category.selected = !category.selected;
+
+        if (category.name === 'total' && category.selected) {
+            categoriesCopy.map((cat: Category) => cat.selected = true);
+            setCategories(categoriesCopy);
+        } else if (category.name === 'total' && !category.selected) {
+            categoriesCopy.map((cat: Category) => cat.selected = false);
+            setCategories(categoriesCopy);
+        } else {
+            const index = categoriesCopy.findIndex((cat: Category) => cat.name === category.name);
+            categoriesCopy[index] = category;
+            autoSelectAllCategories(categoriesCopy);
+        }
+    }
+
+    // autoselect or not "total" category
+    const autoSelectAllCategories = (categories: Category[]) => {
+        const categoriesWithoutTotal = categories.slice(0, 6).filter((cat: any) => cat.value > 0);
+
+        // if "all" button selected, select all others
+        // else if all others selected, select "all" button
+        // else deselect "all" button
+        if (categoriesWithoutTotal.every((category: any) => category.selected)) {
+            categories[6].selected = true;
+        } else {
+            categories[6].selected = false;
+        }
+        setCategories(categories);
+    }
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event, isShowed: boolean) => {
@@ -81,8 +160,13 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, categories, setSelec
 
     return (
         <div className="full-year-wrapper">
-            <div className="year-details">
-                <h2>Année {selectedYear.date}</h2>
+            <div className="year-header">
+                <div className="year-details">
+                    <h2>Année {selectedYear.date}</h2>
+                </div>
+                <div className="filters-component">
+                    <Filters categories={categories} setSelectedCategory={handleSelectCategory} />
+                </div>
             </div>
             {
                 checkEvents() ?

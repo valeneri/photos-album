@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import { Category } from "../../../pages/events/events-page";
 import "./filters.css";
-import { YearEvents, Event, Category } from "../../../pages/events/events-page";
 
 interface FiltersProps {
     categories: Category[],
@@ -9,29 +9,17 @@ interface FiltersProps {
 
 const Filters = ({ categories, setSelectedCategory }: FiltersProps) => {
 
-    const handleSelectCategory = (selectedCategory: Category) => {
-        const categoriesCopy = categories;
-        const index = categoriesCopy.findIndex((category: Category) => category.name === selectedCategory.name);
-        categoriesCopy[index].selected = !categoriesCopy[index].selected;
-
-        // if "all" button selected, select/deselect all others
-        if (selectedCategory.name === 'total') {
-            categoriesCopy.filter((category: Category) => category.value > 0).map(category => category.selected = selectedCategory.selected);
-        }
-        setSelectedCategory(categoriesCopy)
-    }
-
     return (
         <div className="categories-wrapper">
             {categories[6] && categories[6].value > 0 &&
-                <div className={`all-categories ${categories[6].selected ? 'selected' : ''}`} onClick={() => handleSelectCategory(categories[6])}>
+                <div className={`all-categories ${categories[6].selected ? 'selected' : ''}`} onClick={() => setSelectedCategory(categories[6])}>
                     <span>Toutes ({categories[6].value})</span>
                 </div>}
             <div className="categories-details">
                 {categories && categories.map((category: Category, index: number) => {
                     if (category.name !== "total" && category.value > 0) {
                         return (
-                            <div key={index} className={`category ${category.selected ? 'selected' : ''}`} onClick={() => handleSelectCategory(category)}>
+                            <div key={index} className={`category ${category.selected ? 'selected' : ''}`} onClick={() => setSelectedCategory(category)}>
                                 <span>{category.label} ({category.value})</span>
                             </div>
                         )

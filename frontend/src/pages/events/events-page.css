@@ -10,14 +10,14 @@
 /* Timeline component */
 .timeline-component {
     border: 2px solid red;
-    min-height: 320px;
+    max-height: 220px;
     height: 15%;
 }
 
 /********************** PHOTOS THUMBNAILS COMPONENT **********************/
 .photos-thumbnails-component {
     /* border: 2px solid red; */
-    min-height: 700px;
+    min-height: 800px;
     height: 100%;
     /* margin-left: 2%; 
     margin-right: 2%; */
