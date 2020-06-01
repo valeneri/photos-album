@@ -1,7 +1,6 @@
 import React from "react";
+import { Event, Photo } from "../../../pages/events/events-page";
 import "./display-photos-thumbnails.css";
-import { Photo, Event } from "../../../pages/events/events-page";
-import { textDate } from '../../../utils/utils';
 
 // displayPhotos props interface declaration
 interface DisplayPhotosThumbnailsProps {
@@ -16,15 +15,13 @@ const DisplayPhotosThumbnails = ({ selectedEvent, setSelectedPhoto }: DisplayPho
             return (
                 <div key={photo._id} className="photos-wrapper" onClick={() => setSelectedPhoto(photo, selectedEvent)}>
                     <img className="photos" src={`http://localhost:8080/static/photos/${photo.path}`} />
-                    {/* <span>{photo.name}</span><br /> */}
                 </div>
             )
         })
     }
 
     return (
-        <div style={{ border: `2px solid white`, marginBottom: `1%`, marginTop: `1%` }}>
-            <span><h3>{selectedEvent.title}</h3> {textDate(selectedEvent.full_date)}</span>
+        <div className="events-wrapper">
             <div className="display-photos">
                 {displayEventPhotos(selectedEvent)}
             </div>

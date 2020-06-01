@@ -11,7 +11,7 @@ export const App = () => {
     <Router>
       <div className="App">
         <Header siteTitle={"Souvenirs"} />
-        <header className="App-header">
+        <div className="app-main">
           <Switch>
             <Route path="/home">
               <div>
@@ -26,7 +26,7 @@ export const App = () => {
               <AdminPage />
             </Route>
           </Switch>
-        </header>
+        </div>
       </div>
     </Router>
   );

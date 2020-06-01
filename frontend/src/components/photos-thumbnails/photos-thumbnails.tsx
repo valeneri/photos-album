@@ -4,23 +4,24 @@ import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-
 import * as api from "../../api/api";
 import { textDate } from '../../utils/utils';
 import "./photos-thumbnails.css";
-import Filters from "../timeline/filters/filters";
+import Categories from "../negative/categories/categories";
 
 interface PhotosThumbnailsProps {
-    selectedYear: YearEvents,
-    setSelectedEvent: any,
-    setSelectedPhoto: any,
+    selectedYear: YearEvents;
+    setSelectedEvent: any;
+    setSelectedPhoto: any;
 }
 
 const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: PhotosThumbnailsProps) => {
+    // initialize categories
     const initCategories: Category[] = [
-        { value: 0, label: "Anniversaires", name: "birthday", selected: false },
-        { value: 0, label: "Vacances", name: "holidays", selected: false },
-        { value: 0, label: "Noël", name: "xmas", selected: false },
-        { value: 0, label: "Abstrait", name: "abstract", selected: false },
-        { value: 0, label: "Autre", name: "other", selected: false },
-        { value: 0, label: "Non classé", name: "untagged", selected: false },
-        { value: 0, label: "Total", name: "total", selected: false }
+        { value: 0, label: "Total", name: "total", selected: true },
+        { value: 0, label: "Anniversaires", name: "birthday", selected: true },
+        { value: 0, label: "Vacances", name: "holidays", selected: true },
+        { value: 0, label: "Noël", name: "xmas", selected: true },
+        { value: 0, label: "Abstrait", name: "abstract", selected: true },
+        { value: 0, label: "Autre", name: "other", selected: true },
+        { value: 0, label: "Non classé", name: "untagged", selected: true },
     ];
 
     // count year events categories
@@ -28,37 +29,37 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
         year.events.forEach((event: Event) => {
             switch (event.category) {
                 case "birthday":
-                    initCategories[0].value++;
-                    break;
-                case "holidays":
                     initCategories[1].value++;
                     break;
-                case "xmas":
+                case "holidays":
                     initCategories[2].value++;
                     break;
-                case "abstract":
+                case "xmas":
                     initCategories[3].value++;
                     break;
-                case "other":
+                case "abstract":
                     initCategories[4].value++;
                     break;
-                default:
+                case "other":
                     initCategories[5].value++;
+                    break;
+                default:
+                    initCategories[6].value++;
                     break;
             }
         });
         let sum = 0;
-        for (let i = 0; i < initCategories.length - 1; i++) {
+        for (let i = 1; i < initCategories.length; i++) {
             sum += initCategories[i].value;
         }
-        initCategories[6].value = sum;
+        initCategories[0].value = sum;
         return initCategories;
     }
 
     // set events categories
     const [categories, setCategories] = useState<Category[]>(countCategories(selectedYear));
-
-    const [orderedEvents, setOrderedEvents] = useState<Event[]>(selectedYear.events);
+    // events list
+    const [events, setEvents] = useState<Event[]>(selectedYear.events);
 
     // handle categories on select, then filter events 
     const handleSelectCategory = (category: Category) => {
@@ -81,48 +82,49 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
 
     // autoselect or not "total" category
     const autoSelectAllCategories = (categories: Category[]) => {
-        const categoriesWithoutTotal = categories.slice(0, 6).filter((cat: any) => cat.value > 0);
+        const categoriesWithoutTotal = categories.filter((cat: any) => { return (cat.value > 0 && cat.name !== 'total') });
 
         // if "all" button selected, select all others
         // else if all others selected, select "all" button
         // else deselect "all" button
         if (categoriesWithoutTotal.every((category: any) => category.selected)) {
-            categories[6].selected = true;
+            categories[0].selected = true;
         } else {
-            categories[6].selected = false;
+            categories[0].selected = false;
         }
         setCategories(categories);
     }
 
     // display selected event photos, or "click me" if no event is selected
     const displayPhotos = (event: Event, isShowed: boolean) => {
-        return (<div key={event._id} style={{ display: (isShowed && event.selected ? 'block' : 'none') }}>
-            <DisplayPhotosThumbnails selectedEvent={event} setSelectedPhoto={setSelectedPhoto} />
-        </div>)
+        return (
+            <div key={event._id} style={{ display: (isShowed && event.selected ? 'block' : 'none') }}>
+                <DisplayPhotosThumbnails selectedEvent={event} setSelectedPhoto={setSelectedPhoto} />
+            </div>
+        )
     }
 
     // get selected event photos if there aren't any already, then toggle selected flag
     const handleSelectedEvent = async (event: Event) => {
+        const copyEvents = [...events];
+
         if (!event.photos) {
             const tag = `${event.title}_${event.full_date}`;
             const response = await api.getPhotosByEvent(tag);
             event["photos"] = response.data;
         }
-        event.selected = !event.selected;
-        setSelectedEvent(event);
-        setEventsOrder(event);
-    }
 
-    /* set display events order.
-        if selected event already in events list, remove it then push it at first position
-        else if selected event not in list, push it directly at first position
-        else events list is empty, just push it 
-    */
-    const setEventsOrder = (event: Event) => {
-        let copyEvents = [...orderedEvents];
-        copyEvents = copyEvents.filter((evt: Event) => evt._id !== event._id);
-        copyEvents.unshift(event);
-        setOrderedEvents(copyEvents);
+        copyEvents.forEach((evt: Event) => {
+            if (evt._id === event._id) {
+                evt = event;
+                evt.selected = !evt.selected;
+            } else {
+                evt.selected = false
+            }
+        })
+
+        setSelectedEvent(event);
+        setEvents(copyEvents);
     }
 
     // check if there's event in year in order to display them
@@ -145,8 +147,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
             if (selectedCategories.find((category: Category) => category.name === event.category)) {
                 return (
                     <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
-                        <span className="title">{event.title}</span>
-                        <br />
+                        <span className="title"><b>{event.title}</b></span>
                         <span>
                             {textDate(event.full_date)}
                             <small> ({event.photosNumber} photos)</small>
@@ -157,7 +158,6 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
         })
     }
 
-
     return (
         <div className="full-year-wrapper">
             <div className="year-header">
@@ -165,7 +165,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                     <h2>Année {selectedYear.date}</h2>
                 </div>
                 <div className="filters-component">
-                    <Filters categories={categories} setSelectedCategory={handleSelectCategory} />
+                    <Categories categories={categories} setSelectedCategory={handleSelectCategory} />
                 </div>
             </div>
             {
@@ -178,8 +178,8 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                         </div>
                         <div className="thumbnails-wrapper">
                             {
-                                orderedEvents.filter(evt => { return evt.selected }).length > 0 ?
-                                    orderedEvents.map((event: Event) => {
+                                events.filter(evt => { return evt.selected }).length > 0 ?
+                                    events.map((event: Event) => {
                                         let isShowed: boolean;
                                         categories.filter((category: Category) => category.selected).find((category: Category) => category.name === event.category) ?
                                             isShowed = true :
@@ -189,11 +189,11 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                                             return displayPhotos(event, isShowed)
                                         }
                                     })
-                                    : <h3>Cliquez sur un évènement pour afficher les photos</h3>
+                                    : <h3 style={{ textAlign: `left` }}>Cliquez sur un évènement pour afficher les photos</h3>
                             }
                         </div>
                     </div> :
-                    <div>
+                    <div style={{ marginLeft: `2%` }}>
                         <h3>Aucun évènement</h3>
                     </div>
             }

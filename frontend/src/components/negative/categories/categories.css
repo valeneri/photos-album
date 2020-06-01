@@ -2,39 +2,23 @@ span, label {
     font-size: small;
 }
 
-div {
-    text-align: left;
-}
-
 .categories-wrapper {
     display: flex;
-    /* flex-direction: column; */
     width: 100%;
-    /* margin-top: 5px; */
     height: 100%;
-    /* border: 2px solid wheat; */
 }
 
 .category {
     border: 0.5px solid wheat;
-    width: 90%;
+    width: 150px;
     text-align: center;
-}
-
-.all-categories {
-    width: 10%;
-    /* padding-top: 1%; */
-    min-height: 40px;
-    text-align: center;
-    border: 0.5px solid wheat;
 }
 
 .categories-details {
     display: flex;
-    /* height: 100%; */
     width: 90%;
     text-align: center;
-    min-height: 40px;
+    min-height: 30px;
     padding-right: 1%;
 }
 

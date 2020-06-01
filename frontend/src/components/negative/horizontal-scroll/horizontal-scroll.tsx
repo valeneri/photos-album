@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
-import "./horizontal-scroll.css";
+import React, { useState } from "react";
 import { YearEvents } from "../../../pages/events/events-page";
+import "./horizontal-scroll.css";
 
 // horizontal scroll props interface declaration
 interface HorizontalScrollProps {

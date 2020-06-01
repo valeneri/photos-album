@@ -1,7 +1,4 @@
 .photos-wrapper {
-    /* max-width: 300px; */
-    /* display: flex;
-    flex-direction: column; */
     height: 150px;
     width: 150px;
     overflow: hidden;
@@ -13,7 +10,8 @@
     height:100%;
     display: grid;
     grid-template-columns: repeat( auto-fill, minmax(150px, 1fr) );
-    /* gap: 0.1%; */
+    padding: 5px;
+    border-radius: 10px;
 }
 
 .photos {
@@ -22,6 +20,18 @@
     height:150px;
 }
 
+.event-description {
+    text-align: left;
+    margin-left: 1%;
+}
+
 span h3 {
-    color: red;
+    color:rgb(22, 139, 206);
+}
+
+.events-wrapper {
+    box-shadow: 1px 2px 4px 3px purple, 2px 3px 5px 4px rgb(70, 16, 70);
+    border-radius: 10px;
+    margin-bottom: 1%; 
+    background-color: #5a606d1f;
 }

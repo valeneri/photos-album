@@ -1,0 +1,28 @@
+/***************** EVENTS LIST WRAPPER ****************/
+.wrapper {
+    display: flex;
+}
+
+.full-years-list {
+    height: 220px;
+    flex-direction: column;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* border above and under events */
+.border {
+    min-height: 28px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    background-color: rgba(3, 3, 3, 0.301);
+}
+
+/* full years list wapper */
+.full-years {
+    height: 164px;
+    margin-left: 1%;
+    max-width: 99%;
+} 
+

@@ -1,0 +1,19 @@
+.year {
+    border: 7px solid white;
+    background-color: rgb(61, 57, 57);
+    color: orange;
+    min-width: 230px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.year p {
+    font-size: medium;
+}
+
+.year.selected { 
+    border: 7px solid rgb(102, 30, 102);
+}

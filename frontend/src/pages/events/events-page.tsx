@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as api from "../../api/api";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
-import Timeline from "../../components/timeline/timeline";
+import Negative from "../../components/negative/negative";
+import { usePhotosModal } from "../../hooks/use-photos-modal";
 import { sortByDateAsc } from '../../utils/utils';
 import "./events-page.css";
-import { usePhotosModal } from "../../hooks/use-photos-modal";
 
 export interface Event {
     _id: string,
@@ -48,7 +48,6 @@ export interface Category {
 }
 
 const EventsPage = () => {
-
     /*  states declaration */
     // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
@@ -68,13 +67,8 @@ const EventsPage = () => {
         getAllYears();
     }, []);
 
-    // handle actions on select, base on event category
-    const handleSelectEvent = (event: any) => {
-        event.category === "year" ? selectYear(event) : selectEvent(event);
-    };
-
     // Get events in the selected year, toggle selected flag then count events categories & filter
-    const selectYear = async (yearEvents: YearEvents) => {
+    const handleSelectYear = async (yearEvents: YearEvents) => {
         const index = yearsEventsList.findIndex(year => year._id === yearEvents._id);
         const copyYearsEventsList = [...yearsEventsList];
 
@@ -89,7 +83,7 @@ const EventsPage = () => {
     }
 
     // Get event's photos and toggle selected flag 
-    const selectEvent = async (event: Event) => {
+    const handleSelectEvent = async (event: Event) => {
         const copyYearsEventsList = [...yearsEventsList];
 
         copyYearsEventsList.forEach(yearEvents => {
@@ -104,7 +98,7 @@ const EventsPage = () => {
     }
 
     // pass event photos and selected photo index on modal when selecting photo
-    const handleSelectedPhoto = (photo: Photo, event: Event) => {
+    const handleSelectPhoto = (photo: Photo, event: Event) => {
         if (event && event.photos.length > 0) {
             const index = event.photos.findIndex((elem: Photo) => elem._id === photo._id);
             if (index !== -1) {
@@ -120,9 +114,7 @@ const EventsPage = () => {
             <div className="timeline-component">
                 {
                     yearsEventsList.length > 0 &&
-                    <Timeline yearsEventsList={yearsEventsList}
-                        setSelectedEvent={handleSelectEvent}
-                    />
+                    <Negative yearsEventsList={yearsEventsList} setSelectedYear={handleSelectYear} />
                 }
             </div>
             <div className="photos-thumbnails-component">
@@ -134,7 +126,7 @@ const EventsPage = () => {
                                     <PhotosThumbnails
                                         selectedYear={year}
                                         setSelectedEvent={handleSelectEvent}
-                                        setSelectedPhoto={handleSelectedPhoto}
+                                        setSelectedPhoto={handleSelectPhoto}
                                     />
                                 </div>
                             )
