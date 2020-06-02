@@ -25,7 +25,8 @@ export const getEventsByYear = async (req: Request, res: Response) => {
                     title: "$title",
                     date: "$date",
                     category: "$category",
-                    selected: "$selected",
+                    eventTag: "$eventTag",
+                    description: "$description",
                     location: "$location",
                     full_date: "$full_date",
                     photosNumber: { $size: "$photos" }
@@ -65,48 +66,3 @@ export const createEvent = async (req: Request, res: Response) => {
     }
 }
 
-// export const createEventWithPhotos = async (req: Request, res: Response) => {
-
-
-
-//     if (newEvent) {
-//         const eventTag = `${newEvent.title}_${newEvent.full_date}`
-//         const event = new Event({
-//             title: newEvent.title,
-//             full_date: newEvent.full_date,
-//             date: newEvent.date,
-//             location: newEvent.location,
-//             description: newEvent.description,
-//             category: newEvent.category,
-//             eventTag: eventTag
-//         })
-//         try {
-//             const responsePhotos = await Photo.insertMany(photoList);
-//             const responseEvent = await event.save();
-//             res.status(201).json({ event: responseEvent, photos: responsePhotos });
-//         } catch (err) {
-//             res.status(400).json({ message: err.message })
-//         }
-//     }
-// }
-// export const getEventsByYearWithPhotos = async (req: Request, res: Response) => {
-//     try {
-//         const year = req.params['date'];
-//         const events = await Event.aggregate([
-//             {
-//                 $match: { date: `${year}` }
-//             },
-//             {
-//                 $lookup: {
-//                     from: "photos",
-//                     localField: "eventTag",
-//                     foreignField: "eventTag",
-//                     as: "photos"
-//                 }
-//             }
-//         ]);
-//         res.status(200).json(events);
-//     } catch (err) {
-//         res.status(500).json({ message: err.message })
-//     }
-// }

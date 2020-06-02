@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import * as api from "../../api/api";
-import { Category, Event, YearEvents } from "../../pages/events/events-page";
-import { textDate } from '../../utils/utils';
+import * as api from "../../shared/api";
+import { Category, CategoryGroup, Event, YearEvents } from "../../shared/models";
+import { textDate } from '../../shared/utils';
 import Categories from "./categories/categories";
 import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-thumbnails";
 import "./photos-thumbnails.css";
@@ -14,80 +14,67 @@ interface PhotosThumbnailsProps {
 
 const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: PhotosThumbnailsProps) => {
     // initialize categories
-    const initCategories: Category[] = [
-        { value: 0, label: "Total", name: "total", selected: true },
-        { value: 0, label: "Anniversaires", name: "birthday", selected: true },
-        { value: 0, label: "Vacances", name: "holidays", selected: true },
-        { value: 0, label: "Noël", name: "xmas", selected: true },
-        { value: 0, label: "Nature", name: "nature", selected: true },
-        // { value: 0, label: "Autre", name: "other", selected: true },
-        { value: 0, label: "Non classé", name: "untagged", selected: true },
-    ];
+    // const initCategories: Category[] = [
+    //     { value: 0, label: "Total", name: "total", selected: true },
+    //     { value: 0, label: "Anniversaires", name: "birthday", selected: true },
+    //     { value: 0, label: "Vacances", name: "holidays", selected: true },
+    //     { value: 0, label: "Noël", name: "xmas", selected: true },
+    //     { value: 0, label: "Nature", name: "nature", selected: true },
+    //     // { value: 0, label: "Autre", name: "other", selected: true },
+    //     { value: 0, label: "Non classé", name: "untagged", selected: true },
+    // ];
 
-    // count year events categories
-    const countCategories = (year: YearEvents): Category[] => {
+    // count then group year events categories
+    const groupCategories = (year: YearEvents): CategoryGroup[] => {
+        const total: CategoryGroup = { type: { name: 'total', label: 'Toutes' }, value: 0, selected: true };
+        let categories: CategoryGroup[] = [total];
+
         year.events.forEach((event: Event) => {
-            switch (event.category) {
-                case "birthday":
-                    initCategories[1].value++;
-                    break;
-                case "holidays":
-                    initCategories[2].value++;
-                    break;
-                case "xmas":
-                    initCategories[3].value++;
-                    break;
-                case "nature":
-                    initCategories[4].value++;
-                    break;
-                // case "other":
-                //     initCategories[5].value++;
-                //     break;
-                default:
-                    initCategories[5].value++;
-                    break;
+            const index = categories.findIndex((cat: CategoryGroup) => cat.type.name === event.category.name);
+            if (index !== -1) {
+                categories[index].value++;
+            } else {
+                const eventCategory: CategoryGroup = { type: event.category, selected: true, value: 1 };
+                categories.push(eventCategory);
             }
+            //total is the first element
+            categories[0].value++;
         });
-        let sum = 0;
-        for (let i = 1; i < initCategories.length; i++) {
-            sum += initCategories[i].value;
-        }
-        initCategories[0].value = sum;
-        return initCategories;
+        return categories;
     }
 
     // set events categories
-    const [categories, setCategories] = useState<Category[]>(countCategories(selectedYear));
+    const [categories, setCategories] = useState<CategoryGroup[]>(groupCategories(selectedYear));
     // events list
     const [events, setEvents] = useState<Event[]>(selectedYear.events);
 
     // handle categories on select, then filter events 
-    const handleSelectCategory = (category: Category) => {
+    const handleSelectCategory = (category: CategoryGroup) => {
         const categoriesCopy = [...categories];
 
         category.selected = !category.selected;
 
-        if (category.name === 'total' && category.selected) {
-            categoriesCopy.map((cat: Category) => cat.selected = true);
+        if (category.type.name === 'total' && category.selected) {
+            categoriesCopy.map((cat: CategoryGroup) => cat.selected = true);
             setCategories(categoriesCopy);
-        } else if (category.name === 'total' && !category.selected) {
-            categoriesCopy.map((cat: Category) => cat.selected = false);
+        } else if (category.type.name === 'total' && !category.selected) {
+            categoriesCopy.map((cat: CategoryGroup) => cat.selected = false);
             setCategories(categoriesCopy);
         } else {
-            const index = categoriesCopy.findIndex((cat: Category) => cat.name === category.name);
+            const index = categoriesCopy.findIndex((cat: CategoryGroup) => cat.type.name === category.type.name);
             categoriesCopy[index] = category;
             autoSelectAllCategories(categoriesCopy);
         }
     }
 
     // autoselect or not "total" category
-    const autoSelectAllCategories = (categories: Category[]) => {
-        const categoriesWithoutTotal = categories.filter((cat: any) => { return (cat.value > 0 && cat.name !== 'total') });
+    const autoSelectAllCategories = (categories: CategoryGroup[]) => {
+        const categoriesWithoutTotal = categories.filter((cat: CategoryGroup) => { return (cat.value > 0 && cat.type.name !== 'total') });
 
         // if "all" button selected, select all others
         // else if all others selected, select "all" button
         // else deselect "all" button
-        if (categoriesWithoutTotal.every((category: any) => category.selected)) {
+        if (categoriesWithoutTotal.every((category: CategoryGroup) => category.selected)) {
             categories[0].selected = true;
         } else {
             categories[0].selected = false;
@@ -109,8 +96,8 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
         const copyEvents = [...events];
 
         if (!event.photos) {
-            const tag = `${event.title}_${event.full_date}`;
-            const response = await api.getPhotosByEvent(tag);
+            const tag = event.eventTag;
+            const response = await api.getPhotosByEventTag(tag);
             event["photos"] = response.data;
         }
 
@@ -128,25 +115,25 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
     }
 
     // check if there's event in year in order to display them
-    const checkEvents = () => {
+    const isEventCategorySelected = (event: Event) => {
         const selectedCategories = categories.filter(cat => cat.selected);
-        const events = selectedYear.events.filter((event: Event) => {
-            if (selectedCategories.find((category: Category) => category.name === event.category)) {
-                return event;
-            }
-        })
-        return events.length > 0 ? true : false;
+        // const events = selectedYear.events.filter((event: Event) => {
+        if (selectedCategories.find((category: CategoryGroup) => category.type.name === event.category.name)) {
+            return true;
+        }
+        // })
+        // return events.length > 0 ? true : false;
     }
 
     // display events in a tab
     const displayEventsTab = () => {
-        const selectedCategories = categories.filter((category: Category) => category.selected);
+        // const selectedCategories = categories.filter((category: CategoryGroup) => category.selected);
         const events: Event[] = selectedYear.events;
 
         return events.map((event: Event) => {
-            if (selectedCategories.find((category: Category) => category.name === event.category)) {
+            if (isEventCategorySelected(event)) {
                 return (
-                    <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
+                    <div key={`${event._id}`} className={`event-tab-details ${event.selected ? 'selected' : null}`} onClick={() => handleSelectedEvent(event)}>
                         <span className="title"><b>{event.title}</b></span>
                         <span>
                             {textDate(event.full_date)}
@@ -181,26 +168,27 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                 </div>
             </div>
             {
-                checkEvents() ?
-                    <div>
-                        <div className="events-tab-wrapper">
-                            {displayEventsTab()}
-                        </div>
-                        <div className="thumbnails-wrapper">
-                            {
-                                events.filter(evt => { return evt.selected }).length > 0 ?
-                                    events.map((event: Event) => {
-                                        if (event.photos) {
-                                            return displayPhotos(event)
-                                        }
-                                    })
-                                    : <h3 style={{ textAlign: `left` }}>Cliquez sur un évènement pour afficher les photos</h3>
-                            }
-                        </div>
-                    </div> :
-                    <div style={{ marginLeft: `2%` }}>
-                        <h3>Aucun évènement</h3>
+                // checkEvents() ?
+                <div>
+                    <div className="events-tab-wrapper">
+                        {displayEventsTab()}
                     </div>
+                    <div className="thumbnails-wrapper">
+                        {
+                            events.filter(evt => { return evt.selected }).length > 0 ?
+                                events.map((event: Event) => {
+                                    if (event.photos) {
+                                        return displayPhotos(event)
+                                    }
+                                })
+                                : <h3 style={{ textAlign: `left` }}>Cliquez sur un évènement pour afficher les photos</h3>
+                        }
+                    </div>
+                </div>
+                // :
+                // <div style={{ marginLeft: `2%` }}>
+                //     <h3>Aucun évènement</h3>
+                // </div>
             }
         </div>
     )

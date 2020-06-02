@@ -21,10 +21,10 @@ export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
                     title: "$title",
                     date: "$date",
                     category: "$category",
-                    selected: "$selected",
                     eventsNumber: { $size: "$events" }
-                }
-            }
+                },
+            },
+            { $sort: { date: -1 } }
         ]);
         sendOKResponse(res, years);
     } catch (err) {
@@ -32,6 +32,7 @@ export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
     }
 }
 
+// get all years including related events 
 export const getAllYearsEvents = async (req: Request, res: Response) => {
     try {
         const years = await Year.aggregate([
@@ -51,9 +52,8 @@ export const getAllYearsEvents = async (req: Request, res: Response) => {
     }
 }
 
-
+// create a new year in db
 export const createYear = async (req: Request, res: Response) => {
-
     const year = new Year({
         title: `Année ${req.body.year.date}`,
         date: req.body.year.date,

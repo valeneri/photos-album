@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import * as api from "../../api/api";
+import * as api from "../../shared/api";
 import CreateEventForm from "../../components/admin/create-event-form/create-event-form";
 import Table from "../../components/admin/table/table";
-import { YearEvents } from "../events/events-page";
+import { YearEvents } from "../../shared/models";
 import "./admin-page.css";
 
 const AdminPage = () => {
@@ -18,19 +18,25 @@ const AdminPage = () => {
         getAllYearsEvents();
     }, []);
 
-    const createEvent = (date: string) => {
+    const addEvent = (date: string) => {
         setEventYear(date);
+    }
+
+    const handleCreatedYear = async () => {
+        const response = await api.getAllYearsEvents();
+        setYearsEvents(response.data);
     }
 
     return (
         <div className="admin">
+            <button onClick={() => setEventYear('new')}>Créér nouvel évènement</button>
             <div className="table-component">
-                <Table yearsEvents={yearsEvents} handleCreateEvent={createEvent} />
+                {/* <Table yearsEvents={yearsEvents} handleAddEvent={addEvent} /> */}
             </div>
             <hr />
             <div className="full-form">
                 <div className="create-event-form">
-                    {eventYear && eventYear !== "" && <CreateEventForm date={eventYear} />}
+                    {eventYear && eventYear !== "" && <CreateEventForm year={eventYear} setCreatedYear={handleCreatedYear} />}
                 </div>
             </div>
         </div>

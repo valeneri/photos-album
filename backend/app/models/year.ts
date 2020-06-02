@@ -13,10 +13,6 @@ const YearSchema = new mongoose.Schema({
     date: {
         type: String,
         required: true
-    },
-    selected: {
-        type: Boolean,
-        required: false
     }
 })
 

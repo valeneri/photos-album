@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const PhotoSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: false
+        required: true
     },
     date: {
         type: String,

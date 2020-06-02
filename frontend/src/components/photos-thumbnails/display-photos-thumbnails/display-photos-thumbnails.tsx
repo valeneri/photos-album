@@ -1,5 +1,5 @@
 import React from "react";
-import { Event, Photo } from "../../../pages/events/events-page";
+import { Event, Photo } from "../../../shared/models";
 import "./display-photos-thumbnails.css";
 
 // displayPhotos props interface declaration

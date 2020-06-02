@@ -15,7 +15,7 @@
 }
 
 .create-event-form {
-    max-width: 40%;
+    min-width: 20%;
     border: 2px solid wheat;
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import "./year-ui.css";
-import { YearEvents } from "../../../pages/events/events-page";
+import { YearEvents } from "../../../shared/models";
 
 // EventUi props interface declaration
 interface EventUIProps {

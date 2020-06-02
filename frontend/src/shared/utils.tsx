@@ -1,4 +1,3 @@
-import React from 'react';
 
 // date from backend come as DD-MM-YYYY format, then output it as  new Date(YYYY, MM, DD);
 const convertStringToDate = (date: string) => {
@@ -17,11 +16,16 @@ const textDate = (date: string) => {
     return date;
 }
 
+const sortYearsByDateDesc = (years: any[]) => {
+    return years.sort((a: any, b: any) => {
+        return parseInt(b.date) - parseInt(a.date)
+    })
+}
 
-const sortByDateAsc = (events: any[]) => {
+const sortEventsByDateAsc = (events: any[]) => {
     return events.sort((a: any, b: any) => {
         return (+(convertStringToDate(a.full_date)) - +(convertStringToDate(b.full_date)))
     });
 };
 
-export { convertStringToDate, textDate, sortByDateAsc };
+export { convertStringToDate, textDate, sortEventsByDateAsc, sortYearsByDateDesc };

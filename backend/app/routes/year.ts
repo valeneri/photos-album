@@ -10,4 +10,5 @@ yearRouter.get('/', yearController.getAllYearsWithoutEvents);
 // Get all years with events
 yearRouter.get('/events', yearController.getAllYearsEvents);
 
+// Post new year
 yearRouter.post('/', yearController.createYear);

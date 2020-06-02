@@ -25,10 +25,6 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    selected: {
-        type: Boolean,
-        required: false
-    },
     eventTag: {
         type: String,
         required: true

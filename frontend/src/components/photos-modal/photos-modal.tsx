@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './photos-modal.css';
-import { Photo } from '../../pages/events/events-page';
+import { Photo } from '../../shared/models';
 
 //Photos Modal Props interface declaration
 interface PhotosModalProps {

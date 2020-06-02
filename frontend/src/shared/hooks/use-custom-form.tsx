@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 const useCustomForm = ({ initialValues, onSubmit }: any) => {
 
     const [values, setValues] = useState(initialValues || {});
-    // const [uploadedFiles, setUploadedFiles] = useState(initialFiles || [])
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
     const [onSubmitting, setOnSubmitting] = useState<boolean>(false);
@@ -15,7 +14,6 @@ const useCustomForm = ({ initialValues, onSubmit }: any) => {
     useEffect(() => {
         if (!formRendered.current) {
             setValues(initialValues);
-            // setUploadedFiles(initialFiles);
             setErrors({});
             setTouched({});
             setOnSubmitting(false);
@@ -24,7 +22,7 @@ const useCustomForm = ({ initialValues, onSubmit }: any) => {
         formRendered.current = false;
     }, [initialValues]);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { target } = event;
         const { name, value } = target;
         event.persist();
@@ -35,20 +33,6 @@ const useCustomForm = ({ initialValues, onSubmit }: any) => {
         const { target } = event;
         const { files, name } = target;
         event.persist();
-
-        // let allFiles = []
-        // if (files) {
-        //     for (let i = 0; i < files.length; i++) {
-        //         const file = { name: files[i].name, data: files[i], type: files[i].type }
-        //         console.log(files[i].type);
-        //         allFiles.push(file);
-        //     };
-        // }
-        // else {
-        //     console.log("no files detected");
-        // }
-        // console.log(allFiles);
-
         setValues({ ...values, [name]: files });
     };
 

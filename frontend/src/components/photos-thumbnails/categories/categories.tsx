@@ -1,5 +1,5 @@
 import React from "react";
-import { Category } from "../../../pages/events/events-page";
+import { Category, CategoryGroup } from "../../../shared/models";
 import birthday from "./icons/birthday_icon.png";
 import nature from "./icons/nature_icon.png";
 import untagged from "./icons/untagged_icon.png";
@@ -8,7 +8,7 @@ import xmas from "./icons/xmas_icon.png";
 import "./categories.css";
 
 interface FiltersProps {
-    categories: Category[];
+    categories: CategoryGroup[];
     setSelectedCategory: any;
 }
 
@@ -41,7 +41,7 @@ const Categories = ({ categories, setSelectedCategory }: FiltersProps) => {
         <div className="categories-wrapper">
             {
                 <div className="categories-details">
-                    {categories && categories.map((category: Category, index: number) => {
+                    {categories && categories.map((category: CategoryGroup, index: number) => {
                         return (
                             category.value > 0 &&
                             <div
@@ -50,7 +50,7 @@ const Categories = ({ categories, setSelectedCategory }: FiltersProps) => {
                                 onClick={() => setSelectedCategory(category)}
                             >
                                 {/* <span>{category.label} ({category.value})</span> */}
-                                {displayIcon(category)}
+                                {displayIcon(category.type)}
                                 <span><b>{category.value}</b></span>
                             </div>
                         )

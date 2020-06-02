@@ -1,11 +1,13 @@
-import React from "react";
-import useCustomForm from "../../../hooks/use-custom-form";
-import * as api from "../../../api/api";
-
+import React, { useState, useEffect } from "react";
+import * as api from "../../../shared/api";
+import useCustomForm from "../../../shared/hooks/use-custom-form";
 import "./create-event-form.css";
+import { Category, CategoryGroup } from "../../../shared/models";
+
 
 interface CreateEventFormProps {
-    date: string
+    year: string,
+    setCreatedYear: any
 }
 
 const initialValues = {
@@ -18,37 +20,67 @@ const initialValues = {
 };
 
 
-const CreateEventForm = ({ date }: CreateEventFormProps) => {
+const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
+
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const getAllCategories = async () => {
+            const response = await api.getAllCategories();
+            setCategories(response.data);
+        };
+        getAllCategories();
+    }, []);
 
     // const yearDate = date;
-    initialValues.date = date;
+    initialValues.date = year;
 
     const {
         values,
         errors,
         touched,
         handleChange,
+        // handleSelectChange,
         handleFileUpload,
         handleBlur,
         handleSubmit
     } = useCustomForm({
         initialValues,
-        onSubmit: (submittedEvent: any) => { submitForm(submittedEvent) }
+        onSubmit: (submittedEvent: any) => { addEventFormSubmit(submittedEvent) }
     }
     );
 
-    const submitForm = async (submittedEvent: any) => {
+    const addEventFormSubmit = async (submittedEvent: any) => {
         console.log(submittedEvent)
         const { errors, values } = submittedEvent;
-        if (Object.keys(errors).length === 0 && values.photo) {
-            const { title, full_date, category, description, location, files, photo } = values;
-            const eventTag = `${title}_${full_date}`;
+        if (Object.keys(errors).length === 0 && values.files) {
+            let newYear;
+            let newEvent;
+            let newPhotos;
 
-            const event = { title, full_date, category, description, location, date, eventTag };
-            const photos: any = { title, date, eventTag, files };
+            const { title, full_date, category, description, location, files } = values;
+            const eventTag = `${title}_${new Date().getTime()}`;
+            // category is passed as an array value on the dropdown, 1st element is name, 2nd is label
+            const categoryType = { name: category[0], label: category[1] };
 
-            const responseEvent = await api.createEvent(event);
-            const responsePhotos = await api.savePhotosEvent(photos);
+            let date;
+            // if year is created, initialize CategoryGroup
+            if (year === 'new') {
+                date = values.date;
+                const categoryGroup: CategoryGroup = { type: categoryType, value: 1 }
+
+                newYear = { date, categoryGroup };
+                await api.createYear(newYear);
+                setCreatedYear();
+            } else {
+                date = year;
+            }
+
+            newEvent = { title, full_date, categoryType, description, location, date, eventTag };
+            newPhotos = { title, date, eventTag, files };
+
+            const responseEvent = await api.createEvent(newEvent);
+            const responsePhotos = await api.savePhotosEvent(newPhotos);
 
             console.log("event saved", responseEvent);
             console.log("photos saved", responsePhotos);
@@ -60,42 +92,58 @@ const CreateEventForm = ({ date }: CreateEventFormProps) => {
     return (
         <div>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <div>
-                    <span>Ajouter évènement pour l'année <b style={{ color: 'red' }}>{date}</b></span>
-                </div>
-                < hr />
+                {
+                    year !== 'new' &&
+                    <div>
+                        <span>Ajouter évènement pour l'année <b style={{ color: 'red' }}>{year}</b></span>
+                        < hr />
+                    </div>
+                }
                 <div className="add-event-form">
                     <div className="required-fields">
                         <h5>Champs obligatoires</h5>
-                        <label>
-                            Nom de l'évènement :
-                        <input type="text" name="title" required onChange={handleChange} />
-                        </label>
-                        <label>
-                            Date de l'évènement :
-                        <input type="text" name="full_date" required onChange={handleChange} />
-                        </label>
+                        {
+                            year === 'new' &&
+                            <div className="form-field">
+                                <label>Année de l'évènement : </label>
+                                <input type="text" name="date" required onChange={handleChange} />
+                            </div>
+                        }
+                        <div className="form-field">
+                            <label>Nom de l'évènement : </label>
+                            <input type="text" name="title" required onChange={handleChange} />
+                        </div>
+                        <div className="form-field">
+                            <label>Date de l'évènement (Au format jj-MM-AAAA) : </label>
+                            <input type="text" name="full_date" required onChange={handleChange} />
+                        </div>
                     </div>
-
                     <div className="optional-fields">
                         <h5>Champs optionnels</h5>
-                        <label>
-                            Catégorie :
-                        <input type="text" name="category" onChange={handleChange} />
-                        </label>
-                        <label>
-                            Lieu :
-                        <input type="text" name="location" onChange={handleChange} />
-                        </label>
-                        <label>
-                            Description :
-                        <input type="textarea" name="description" onChange={handleChange} />
-                        </label>
+                        <div className="form-field">
+                            <label>Catégorie : </label>
+                            <select name="category" onChange={handleChange}>
+                                {
+                                    categories.map((category: Category) => {
+                                        return <option key={category._id} value={[category.name, category.label]}>{category.label}</option>
+                                    })
+                                }
+                            </select>
+                        </div>
+                        <div className="form-field">
+                            <label>Lieu : </label>
+                            <input type="text" name="location" onChange={handleChange} />
+                        </div>
+
+                        <div className="form-field">
+                            <label>Description : </label>
+                            <input type="textarea" name="description" onChange={handleChange} />
+                        </div>
                     </div>
-                    <label>
-                        Ajouter photos :
+                    <div className="form-field">
+                        <label>Ajouter photos : </label>
                         <input type="file" name="files" required multiple onChange={handleFileUpload} />
-                    </label>
+                    </div>
                     <input type="submit" value="Créer évènement" className="submit-button" />
                 </div>
             </form>

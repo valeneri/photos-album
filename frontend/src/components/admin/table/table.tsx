@@ -1,50 +1,41 @@
-import React from "react";
-import { YearEvents, Event, Category } from "../../../pages/events/events-page";
+import React, { useState } from "react";
+import { YearEvents, Event, Category, CategoryGroup } from "../../../shared/models";
 import "./table.css";
 
 interface TableProps {
     yearsEvents: YearEvents[],
-    handleCreateEvent: any
+    handleAddEvent: any
 }
 
-const Table = ({ yearsEvents, handleCreateEvent }: TableProps) => {
+const Table = ({ yearsEvents, handleAddEvent }: TableProps) => {
 
-    const setEventsCategory = (year: YearEvents): any => {
-        // const categories = { birthday: 0, holidays: 0, xmas: 0, abstract: 0, other: 0, untagged: 0 };
-        const categories: Category[] = [
-            { value: 0, label: "Anniversaires", name: "birthday", selected: false },
-            { value: 0, label: "Vacances", name: "holidays", selected: false },
-            { value: 0, label: "Noël", name: "xmas", selected: false },
-            { value: 0, label: "Abstrait", name: "abstract", selected: false },
-            { value: 0, label: "Autre", name: "other", selected: false },
-            { value: 0, label: "Non classé", name: "untagged", selected: false },
-            { value: 0, label: "Total", name: "total", selected: false }
-        ];
+    const setAllYearsCategoryGroup = (years: YearEvents[]): YearEvents[] => {
+        return years.map((year: YearEvents) => {
+            const categoryGroup = setEventsCategoryGroup(year);
+            year["categoryGroup"] = categoryGroup;
+            return year;
+        })
+    };
+
+    const setEventsCategoryGroup = (year: YearEvents): CategoryGroup[] => {
+        const total: CategoryGroup = { type: { name: 'total', label: 'Toutes' }, value: 0, selected: false };
+        let categories: CategoryGroup[] = [total];
 
         year.events.forEach((event: Event) => {
-            switch (event.category) {
-                case "birthday":
-                    categories[0].value++;
-                    break;
-                case "holidays":
-                    categories[1].value++;
-                    break;
-                case "xmas":
-                    categories[2].value++;
-                    break;
-                case "abstract":
-                    categories[3].value++;
-                    break;
-                case "other":
-                    categories[4].value++
-                    break;
-                default:
-                    categories[5].value++
-                    break;
+            const index = categories.findIndex((cat: CategoryGroup) => cat.type.name === event.category.name);
+            if (index !== -1) {
+                categories[index].value++;
+            } else {
+                const eventCategory: CategoryGroup = { type: event.category, selected: false, value: 1 };
+                categories.push(eventCategory);
             }
+            //total is the first element
+            categories[0].value++;
         });
         return categories;
-    }
+    };
+
+    const [yearsEventWithCategories, setYearsEventWithCategories] = useState<YearEvents[]>(setAllYearsCategoryGroup(yearsEvents))
 
     return (
         <table>
@@ -63,10 +54,10 @@ const Table = ({ yearsEvents, handleCreateEvent }: TableProps) => {
                     <th>Non classé</th>
                 </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
 
-                {yearsEvents && yearsEvents.map((yearEvents: YearEvents) => {
-                    const category = setEventsCategory(yearEvents);
+                {yearsEventWithCategories && yearsEventWithCategories.map((yearEvents: YearEvents) => {
+                    const categoryGroup = yearEvents.categoryGroup;
                     return (
                         <tr key={yearEvents._id}>
                             <th>{yearEvents.date} ({yearEvents.events.length})</th>
@@ -89,13 +80,13 @@ const Table = ({ yearsEvents, handleCreateEvent }: TableProps) => {
                                 <span>{category[5].value}</span>
                             </td>
                             <td>
-                                <button onClick={() => { handleCreateEvent(yearEvents.date) }}>Ajout </button>
+                                <button onClick={() => { handleAddEvent(yearEvents.date) }}>Ajout </button>
                                 <button>Modifier</button>
                                 <button>Supprimer</button>
                             </td>
                         </tr>)
                 })}
-            </tbody>
+            </tbody> */}
         </table>
     )
 }

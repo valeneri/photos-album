@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { YearEvents } from "../../../pages/events/events-page";
+import { YearEvents } from "../../../shared/models";
 import "./horizontal-scroll.css";
 
 // horizontal scroll props interface declaration

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { YearEvents } from "../../pages/events/events-page";
+import { YearEvents } from "../../shared/models";
 import YearUI from "./year-ui/year-ui";
 import HorizontalScroll from "./horizontal-scroll/horizontal-scroll";
 import "./negative.css";

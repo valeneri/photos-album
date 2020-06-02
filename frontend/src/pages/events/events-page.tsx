@@ -1,51 +1,11 @@
 import React, { useEffect, useState } from "react";
-import * as api from "../../api/api";
+import * as api from "../../shared/api";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
 import Negative from "../../components/negative/negative";
-import { usePhotosModal } from "../../hooks/use-photos-modal";
-import { sortByDateAsc } from '../../utils/utils';
+import { usePhotosModal } from "../../shared/hooks/use-photos-modal";
+import { sortEventsByDateAsc } from '../../shared/utils';
 import "./events-page.css";
-
-export interface Event {
-    _id: string,
-    category: string,
-    title: string,
-    date: string,
-    full_date: string,
-    description: string,
-    location: string,
-    selected: boolean,
-    photosNumber: number,
-    photos: any[]
-}
-
-export interface Photo {
-    _id: string,
-    name: string,
-    title: string,
-    path: string,
-    date: string
-    eventTag: string
-}
-
-export interface YearEvents {
-    _id: string,
-    category: string,
-    title: string,
-    date: string,
-    selected: boolean,
-    isEvent: boolean,
-    eventsNumber: number,
-    events: Event[],
-    photos: Photo[],
-}
-
-export interface Category {
-    value: number,
-    label: string,
-    name: string,
-    selected: boolean
-}
+import { YearEvents, Event, Photo } from "../../shared/models";
 
 const EventsPage = () => {
     /*  states declaration */
@@ -62,6 +22,7 @@ const EventsPage = () => {
     useEffect(() => {
         const getAllYears = async () => {
             const response = await api.getAllYearsWithoutEvents();
+            // const sortedYears = sortYearsByDateDesc(response.data);
             setYearsEventsList(response.data);
         }
         getAllYears();
@@ -76,7 +37,7 @@ const EventsPage = () => {
             const response = await api.getEventsByYear(yearEvents.date);
             copyYearsEventsList[index]["events"] = response.data;
 
-            sortByDateAsc(copyYearsEventsList[index].events);
+            sortEventsByDateAsc(copyYearsEventsList[index].events);
         }
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
         setYearsEventsList(copyYearsEventsList);

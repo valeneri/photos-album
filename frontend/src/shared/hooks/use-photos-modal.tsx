@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import PhotosModal from "../components/photos-modal/photos-modal";
-import { Photo } from "../pages/events/events-page";
+import PhotosModal from "../../components/photos-modal/photos-modal";
+import { Photo } from "../models";
 
 // Photos Modal Props interface declaration
 interface PhotosModalProps {
