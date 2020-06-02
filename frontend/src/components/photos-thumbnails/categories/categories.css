@@ -1,0 +1,45 @@
+span, label {
+    font-size: small;
+}
+
+.categories-wrapper {
+    display: flex;
+    width: 100%;
+    height: 64px;
+    padding-top: 8px;
+}
+
+.category {
+    width: 60px;
+    text-align: center;
+    display: flex;
+    padding-right: 2px;
+    padding-left: 2px;
+    padding-top: 2px;
+}
+
+.category > img, .category > div {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 1;
+}
+.category > span > b {
+    position: relative;
+    top: 40px;
+    left: 0;
+    z-index: 2;
+    font-size: 20px;
+    color: rgb(0, 162, 255);
+}
+
+.categories-details {
+    display: flex;
+    text-align: center;
+    min-height: 60px;
+    background-color: rgb(48, 43, 43);
+}
+
+.selected {
+    background-color: rgb(97, 255, 5);
+}

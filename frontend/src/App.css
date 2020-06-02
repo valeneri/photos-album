@@ -17,6 +17,7 @@
   min-height: 92vh;
   font-size: calc(8px + 2vmin);
   color: white;
+  scroll-behavior: smooth;
 }
 
 .App-link {

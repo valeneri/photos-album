@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Event, YearEvents, Category } from "../../pages/events/events-page";
-import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-thumbnails";
+import React, { useState } from "react";
 import * as api from "../../api/api";
+import { Category, Event, YearEvents } from "../../pages/events/events-page";
 import { textDate } from '../../utils/utils';
+import Categories from "./categories/categories";
+import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-thumbnails";
 import "./photos-thumbnails.css";
-import Categories from "../negative/categories/categories";
 
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents;
@@ -19,8 +19,8 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
         { value: 0, label: "Anniversaires", name: "birthday", selected: true },
         { value: 0, label: "Vacances", name: "holidays", selected: true },
         { value: 0, label: "Noël", name: "xmas", selected: true },
-        { value: 0, label: "Abstrait", name: "abstract", selected: true },
-        { value: 0, label: "Autre", name: "other", selected: true },
+        { value: 0, label: "Nature", name: "nature", selected: true },
+        // { value: 0, label: "Autre", name: "other", selected: true },
         { value: 0, label: "Non classé", name: "untagged", selected: true },
     ];
 
@@ -37,14 +37,14 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                 case "xmas":
                     initCategories[3].value++;
                     break;
-                case "abstract":
+                case "nature":
                     initCategories[4].value++;
                     break;
-                case "other":
-                    initCategories[5].value++;
-                    break;
+                // case "other":
+                //     initCategories[5].value++;
+                //     break;
                 default:
-                    initCategories[6].value++;
+                    initCategories[5].value++;
                     break;
             }
         });
@@ -96,9 +96,9 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
     }
 
     // display selected event photos, or "click me" if no event is selected
-    const displayPhotos = (event: Event, isShowed: boolean) => {
+    const displayPhotos = (event: Event) => {
         return (
-            <div key={event._id} style={{ display: (isShowed && event.selected ? 'block' : 'none') }}>
+            <div key={event._id} style={{ display: (event.selected ? 'block' : 'none') }}>
                 <DisplayPhotosThumbnails selectedEvent={event} setSelectedPhoto={setSelectedPhoto} />
             </div>
         )
@@ -154,6 +154,18 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                         </span>
                     </div>
                 )
+                // display also untagged events
+                // } else if (categories[5].selected && categories.every((cat: Category) => cat.name !== event.category)) {
+                //     return (
+                //         <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
+                //             <span className="title"><b>{event.title}</b></span>
+                //             <span>
+                //                 {textDate(event.full_date)}
+                //                 <small> ({event.photosNumber} photos)</small>
+                //             </span>
+                //         </div>
+                //     )
+                // 
             }
         })
     }
@@ -164,29 +176,22 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                 <div className="year-details">
                     <h2>Année {selectedYear.date}</h2>
                 </div>
-                <div className="filters-component">
+                <div className="categories-component">
                     <Categories categories={categories} setSelectedCategory={handleSelectCategory} />
                 </div>
             </div>
             {
                 checkEvents() ?
                     <div>
-                        <div className="year-tab">
-                            <div className="events-tab-wrapper">
-                                {displayEventsTab()}
-                            </div>
+                        <div className="events-tab-wrapper">
+                            {displayEventsTab()}
                         </div>
                         <div className="thumbnails-wrapper">
                             {
                                 events.filter(evt => { return evt.selected }).length > 0 ?
                                     events.map((event: Event) => {
-                                        let isShowed: boolean;
-                                        categories.filter((category: Category) => category.selected).find((category: Category) => category.name === event.category) ?
-                                            isShowed = true :
-                                            isShowed = false;
-
                                         if (event.photos) {
-                                            return displayPhotos(event, isShowed)
+                                            return displayPhotos(event)
                                         }
                                     })
                                     : <h3 style={{ textAlign: `left` }}>Cliquez sur un évènement pour afficher les photos</h3>
