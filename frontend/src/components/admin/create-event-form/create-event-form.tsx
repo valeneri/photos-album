@@ -13,7 +13,7 @@ interface CreateEventFormProps {
 const initialValues = {
     title: "",
     full_date: "",
-    category: "untagged",
+    category: "",
     description: "",
     location: "",
     date: "",
@@ -58,16 +58,16 @@ const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
             let newEvent;
             let newPhotos;
 
-            const { title, full_date, category, description, location, files } = values;
+            const { title, full_date, description, location, files } = values;
             const eventTag = `${title}_${new Date().getTime()}`;
             // category is passed as an array value on the dropdown, 1st element is name, 2nd is label
-            const categoryType = { name: category[0], label: category[1] };
-
+            const category = { name: values.category.split(',')[0], label: values.category.split(',')[1] };
+            console.log(category);
             let date;
             // if year is created, initialize CategoryGroup
             if (year === 'new') {
                 date = values.date;
-                const categoryGroup: CategoryGroup = { type: categoryType, value: 1 }
+                const categoryGroup: CategoryGroup = { category: category, value: 1 }
 
                 newYear = { date, categoryGroup };
                 await api.createYear(newYear);
@@ -76,7 +76,7 @@ const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
                 date = year;
             }
 
-            newEvent = { title, full_date, categoryType, description, location, date, eventTag };
+            newEvent = { title, full_date, category, description, location, date, eventTag };
             newPhotos = { title, date, eventTag, files };
 
             const responseEvent = await api.createEvent(newEvent);

@@ -50,7 +50,7 @@ const Categories = ({ categories, setSelectedCategory }: FiltersProps) => {
                                 onClick={() => setSelectedCategory(category)}
                             >
                                 {/* <span>{category.label} ({category.value})</span> */}
-                                {displayIcon(category.type)}
+                                {/* {displayIcon(category.type)} */}
                                 <span><b>{category.value}</b></span>
                             </div>
                         )

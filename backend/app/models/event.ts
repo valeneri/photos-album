@@ -10,7 +10,16 @@ const EventSchema = new mongoose.Schema({
         required: false
     },
     category: {
-        type: String,
+        type: {
+            name: {
+                type: String,
+                required: true,
+            },
+            label: {
+                type: String,
+                required: true,
+            }
+        },
         required: true,
     },
     date: {

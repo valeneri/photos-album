@@ -26,6 +26,7 @@ const useCustomForm = ({ initialValues, onSubmit }: any) => {
         const { target } = event;
         const { name, value } = target;
         event.persist();
+        console.log(value);
         setValues({ ...values, [name]: value });
     };
 

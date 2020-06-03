@@ -41,21 +41,23 @@ export const getEventsByYear = async (req: Request, res: Response) => {
 
 export const createEvent = async (req: Request, res: Response) => {
 
-    const newEvent = req.body.event;
+    const event = req.body.event;
 
-    if (newEvent) {
+    if (event) {
         // const eventTag = `${newEvent.title}_${newEvent.full_date}`;
-        const event = new Event({
-            title: newEvent.title,
-            full_date: newEvent.full_date,
-            date: newEvent.date,
-            location: newEvent.location,
-            description: newEvent.description,
-            category: newEvent.category,
-            eventTag: newEvent.eventTag
+        console.log(event)
+        console.log(event.category);
+        const newEvent = new Event({
+            title: event.title,
+            full_date: event.full_date,
+            date: event.date,
+            location: event.location,
+            description: event.description,
+            category: event.category,
+            eventTag: event.eventTag
         })
         try {
-            const createdEvent = await event.save();
+            const createdEvent = await newEvent.save();
             sendCreatedResponse(res, createdEvent);
         } catch (err) {
             sendBadRequestErrorResponse(res, err);

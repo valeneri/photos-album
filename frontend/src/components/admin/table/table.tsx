@@ -18,15 +18,15 @@ const Table = ({ yearsEvents, handleAddEvent }: TableProps) => {
     };
 
     const setEventsCategoryGroup = (year: YearEvents): CategoryGroup[] => {
-        const total: CategoryGroup = { type: { name: 'total', label: 'Toutes' }, value: 0, selected: false };
+        const total: CategoryGroup = { category: { name: 'total', label: 'Toutes' }, value: 0, selected: false };
         let categories: CategoryGroup[] = [total];
 
         year.events.forEach((event: Event) => {
-            const index = categories.findIndex((cat: CategoryGroup) => cat.type.name === event.category.name);
+            const index = categories.findIndex((cat: CategoryGroup) => cat.category.name === event.category.name);
             if (index !== -1) {
                 categories[index].value++;
             } else {
-                const eventCategory: CategoryGroup = { type: event.category, selected: false, value: 1 };
+                const eventCategory: CategoryGroup = { category: event.category, selected: false, value: 1 };
                 categories.push(eventCategory);
             }
             //total is the first element

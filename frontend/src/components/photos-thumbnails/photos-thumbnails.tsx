@@ -26,15 +26,15 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
 
     // count then group year events categories
     const groupCategories = (year: YearEvents): CategoryGroup[] => {
-        const total: CategoryGroup = { type: { name: 'total', label: 'Toutes' }, value: 0, selected: true };
+        const total: CategoryGroup = { category: { name: 'total', label: 'Toutes' }, value: 0, selected: true };
         let categories: CategoryGroup[] = [total];
 
         year.events.forEach((event: Event) => {
-            const index = categories.findIndex((cat: CategoryGroup) => cat.type.name === event.category.name);
+            const index = categories.findIndex((catGroup: CategoryGroup) => catGroup.category.name === event.category.name);
             if (index !== -1) {
                 categories[index].value++;
             } else {
-                const eventCategory: CategoryGroup = { type: event.category, selected: true, value: 1 };
+                const eventCategory: CategoryGroup = { category: event.category, selected: true, value: 1 };
                 categories.push(eventCategory);
             }
             //total is the first element
@@ -44,32 +44,32 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
     }
 
     // set events categories
-    const [categories, setCategories] = useState<CategoryGroup[]>(groupCategories(selectedYear));
+    const [categoriesGroup, setCategoriesGroup] = useState<CategoryGroup[]>(groupCategories(selectedYear));
     // events list
     const [events, setEvents] = useState<Event[]>(selectedYear.events);
 
     // handle categories on select, then filter events 
-    const handleSelectCategory = (category: CategoryGroup) => {
-        const categoriesCopy = [...categories];
+    const handleSelectCategory = (categoryGroup: CategoryGroup) => {
+        const categoriesCopy = [...categoriesGroup];
 
-        category.selected = !category.selected;
+        categoryGroup.selected = !categoryGroup.selected;
 
-        if (category.type.name === 'total' && category.selected) {
+        if (categoryGroup.category.name === 'total' && categoryGroup.selected) {
             categoriesCopy.map((cat: CategoryGroup) => cat.selected = true);
-            setCategories(categoriesCopy);
-        } else if (category.type.name === 'total' && !category.selected) {
+            setCategoriesGroup(categoriesCopy);
+        } else if (categoryGroup.category.name === 'total' && !categoryGroup.selected) {
             categoriesCopy.map((cat: CategoryGroup) => cat.selected = false);
-            setCategories(categoriesCopy);
+            setCategoriesGroup(categoriesCopy);
         } else {
-            const index = categoriesCopy.findIndex((cat: CategoryGroup) => cat.type.name === category.type.name);
-            categoriesCopy[index] = category;
+            const index = categoriesCopy.findIndex((catGroup: CategoryGroup) => catGroup.category.name === categoryGroup.category.name);
+            categoriesCopy[index] = categoryGroup;
             autoSelectAllCategories(categoriesCopy);
         }
     }
 
     // autoselect or not "total" category
     const autoSelectAllCategories = (categories: CategoryGroup[]) => {
-        const categoriesWithoutTotal = categories.filter((cat: CategoryGroup) => { return (cat.value > 0 && cat.type.name !== 'total') });
+        const categoriesWithoutTotal = categories.filter((catGroup: CategoryGroup) => { return (catGroup.value > 0 && catGroup.category.name !== 'total') });
 
         // if "all" button selected, select all others
         // else if all others selected, select "all" button
@@ -79,7 +79,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
         } else {
             categories[0].selected = false;
         }
-        setCategories(categories);
+        setCategoriesGroup(categories);
     }
 
     // display selected event photos, or "click me" if no event is selected
@@ -116,9 +116,9 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
 
     // check if there's event in year in order to display them
     const isEventCategorySelected = (event: Event) => {
-        const selectedCategories = categories.filter(cat => cat.selected);
+        const selectedCategories = categoriesGroup.filter(cat => cat.selected);
         // const events = selectedYear.events.filter((event: Event) => {
-        if (selectedCategories.find((category: CategoryGroup) => category.type.name === event.category.name)) {
+        if (selectedCategories.find((categoryGroup: CategoryGroup) => categoryGroup.category.name === event.category.name)) {
             return true;
         }
         // })
@@ -164,7 +164,7 @@ const PhotosThumbnails = ({ selectedYear, setSelectedEvent, setSelectedPhoto }: 
                     <h2>Année {selectedYear.date}</h2>
                 </div>
                 <div className="categories-component">
-                    <Categories categories={categories} setSelectedCategory={handleSelectCategory} />
+                    <Categories categories={categoriesGroup} setSelectedCategory={handleSelectCategory} />
                 </div>
             </div>
             {

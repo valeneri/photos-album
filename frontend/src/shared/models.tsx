@@ -40,7 +40,7 @@ export interface Category {
 
 export interface CategoryGroup {
     // categories: {
-    type: Category
+    category: Category
     selected?: boolean
     value: number;
     // }

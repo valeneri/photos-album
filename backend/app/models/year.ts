@@ -5,10 +5,24 @@ const YearSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
-        type: String,
+    categoryGroup: {
+        type: [{
+            category: {
+                label: {
+                    type: String,
+                    required: true
+                },
+                name: {
+                    type: String,
+                    required: true
+                },
+            },
+            value: {
+                type: Number,
+                required: true
+            }
+        }],
         required: true,
-        default: "year"
     },
     date: {
         type: String,

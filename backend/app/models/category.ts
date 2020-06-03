@@ -18,7 +18,7 @@ const CategorySchema = new mongoose.Schema({
             filename: {
                 type: String,
                 required: true
-            },
+            }
         },
         required: true
     }

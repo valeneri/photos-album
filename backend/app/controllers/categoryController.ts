@@ -13,13 +13,25 @@ export const getAllCategories = async (req: Request, res: Response) => {
 }
 
 // create a new category
-export const createCategory = async (req: Request, res: Response) => {
-    const category = req.body["category"];
+export const createCategory = async (req: any, res: Response) => {
+    console.log(req.body);
+    console.log(req.file);
+    const name = req.body.name;
+    const label = req.body.label;
 
-    if (category) {
-        const newCategory = new Category(category);
+    console.log("category name :", name)
+    if (name && label && req.file) {
+        const icon = req.file;
+        const newCategory = new Category({
+            name: name,
+            label: label,
+            icon: {
+                file: icon.buffer,
+                filename: icon.originalname
+            }
+        });
         try {
-            const categoryResponse = newCategory.save();
+            const categoryResponse = await newCategory.save();
             sendCreatedResponse(res, categoryResponse);
         } catch (err) {
             sendBadRequestErrorResponse(res, err);
