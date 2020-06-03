@@ -11,14 +11,14 @@ interface TableProps {
 const Table = ({ yearsEvents, categories, addEvent }: TableProps) => {
 
     const setCategoriesValue = (categoryGroup: CategoryGroup[]) => {
-        let value = 0;
+
         return categories.map((cat: Category) => {
-            const index = categoryGroup.findIndex((catGroup: CategoryGroup) => {
-                return catGroup.category.name === cat.name;
+            let value = 0;
+            categoryGroup.forEach((catGroup: CategoryGroup) => {
+                if (cat.name === catGroup.category.name) {
+                    value = catGroup.value;
+                }
             })
-            if (index !== -1) {
-                value = categoryGroup[index].value;
-            }
             return (
                 <td key={cat._id}>
                     <span>{value}</span>
