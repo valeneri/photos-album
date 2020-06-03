@@ -58,7 +58,6 @@ const CreateEventForm = ({ year, categories, setCreatedYear }: CreateEventFormPr
             // if year is created, initialize CategoryGroup
             if (!year.date) {
                 const categoryGroup: CategoryGroup[] = [{ category: category, value: 1 }];
-
                 date = values.date;
                 newYear = { date, categoryGroup };
 
@@ -67,12 +66,13 @@ const CreateEventForm = ({ year, categories, setCreatedYear }: CreateEventFormPr
             } else {
                 date = year.date;
                 newYear = year;
-                newYear.categoryGroup.map((catGroup: CategoryGroup) => {
-                    if (catGroup.category.name === category.name) {
-                        catGroup.value++;
-                    }
-                    return catGroup;
-                })
+                const index = newYear.categoryGroup.findIndex((cat: CategoryGroup) => cat.category.name === category.name);
+
+                if (index !== -1) {
+                    newYear.categoryGroup[index].value++
+                } else {
+                    newYear.categoryGroup.push({ category: category, value: 1 });
+                }
                 await api.updateYear(newYear);
             }
 

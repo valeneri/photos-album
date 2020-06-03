@@ -5,7 +5,7 @@ import Negative from "../../components/negative/negative";
 import { usePhotosModal } from "../../shared/hooks/use-photos-modal";
 import { sortEventsByDateAsc } from '../../shared/utils';
 import "./events-page.css";
-import { YearEvents, Event, Photo } from "../../shared/models";
+import { YearEvents, Event, Photo, Category } from "../../shared/models";
 
 const EventsPage = () => {
     /*  states declaration */
@@ -15,17 +15,21 @@ const EventsPage = () => {
     const [startIndex, setStartIndex] = useState<number>(-1);
     // set selected thumbnails event
     const [displayedEvent, setDisplayedEvent] = useState<Event>();
+    // set categories list
+    const [categories, setCategories] = useState<Category[]>([]);
     // photo modal hook
     const { show, RenderPhotosModal } = usePhotosModal();
 
-    // Get all years without associated events on component mounting
+    // Get all years without associated events and categories list on component mounting
     useEffect(() => {
-        const getAllYears = async () => {
-            const response = await api.getAllYearsWithoutEvents();
+        const getAllYearsAndCategories = async () => {
+            const yearsResponse = await api.getAllYearsWithoutEvents();
+            const categoriesResponse = await api.getAllCategories();
             // const sortedYears = sortYearsByDateDesc(response.data);
-            setYearsEventsList(response.data);
+            setYearsEventsList(yearsResponse.data);
+            setCategories(categoriesResponse.data);
         }
-        getAllYears();
+        getAllYearsAndCategories();
     }, []);
 
     // Get events in the selected year, toggle selected flag then count events categories & filter
@@ -88,6 +92,7 @@ const EventsPage = () => {
                                         selectedYear={year}
                                         setSelectedEvent={handleSelectEvent}
                                         setSelectedPhoto={handleSelectPhoto}
+                                        categories={categories}
                                     />
                                 </div>
                             )

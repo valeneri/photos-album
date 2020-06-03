@@ -36,6 +36,7 @@ export interface Category {
     _id?: string;
     label: string;
     name: string;
+    icon?: any;
 }
 
 export interface CategoryGroup {
