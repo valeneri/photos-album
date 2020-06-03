@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import * as api from "../../../shared/api";
 import useCustomForm from "../../../shared/hooks/use-custom-form";
 import "./create-event-form.css";
-import { Category, CategoryGroup } from "../../../shared/models";
+import { Category, CategoryGroup, YearEvents } from "../../../shared/models";
 
 
 interface CreateEventFormProps {
-    year: string,
-    setCreatedYear: any
+    year: YearEvents;
+    setCreatedYear: any;
+    categories: Category[];
 }
 
 const initialValues = {
@@ -20,27 +21,16 @@ const initialValues = {
 };
 
 
-const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
-
-    const [categories, setCategories] = useState<Category[]>([]);
-
-    useEffect(() => {
-        const getAllCategories = async () => {
-            const response = await api.getAllCategories();
-            setCategories(response.data);
-        };
-        getAllCategories();
-    }, []);
+const CreateEventForm = ({ year, categories, setCreatedYear }: CreateEventFormProps) => {
 
     // const yearDate = date;
-    initialValues.date = year;
+    initialValues.date = year.date ? year.date : '';
 
     const {
         values,
         errors,
         touched,
         handleChange,
-        // handleSelectChange,
         handleFileUpload,
         handleBlur,
         handleSubmit
@@ -57,23 +47,33 @@ const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
             let newYear;
             let newEvent;
             let newPhotos;
+            let date;
 
             const { title, full_date, description, location, files } = values;
             const eventTag = `${title}_${new Date().getTime()}`;
-            // category is passed as an array value on the dropdown, 1st element is name, 2nd is label
-            const category = { name: values.category.split(',')[0], label: values.category.split(',')[1] };
-            console.log(category);
-            let date;
-            // if year is created, initialize CategoryGroup
-            if (year === 'new') {
-                date = values.date;
-                const categoryGroup: CategoryGroup = { category: category, value: 1 }
 
+            // category is passed as stringified array value on the dropdown, 1st element is name, 2nd is label
+            const category = { name: values.category.split(',')[0], label: values.category.split(',')[1] };
+
+            // if year is created, initialize CategoryGroup
+            if (!year.date) {
+                const categoryGroup: CategoryGroup[] = [{ category: category, value: 1 }];
+
+                date = values.date;
                 newYear = { date, categoryGroup };
+
                 await api.createYear(newYear);
-                setCreatedYear();
+                // setCreatedYear();
             } else {
-                date = year;
+                date = year.date;
+                newYear = year;
+                newYear.categoryGroup.map((catGroup: CategoryGroup) => {
+                    if (catGroup.category.name === category.name) {
+                        catGroup.value++;
+                    }
+                    return catGroup;
+                })
+                await api.updateYear(newYear);
             }
 
             newEvent = { title, full_date, category, description, location, date, eventTag };
@@ -93,9 +93,9 @@ const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
         <div>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 {
-                    year !== 'new' &&
+                    year.date &&
                     <div>
-                        <span>Ajouter évènement pour l'année <b style={{ color: 'red' }}>{year}</b></span>
+                        <span>Ajouter évènement pour l'année <b style={{ color: 'red' }}>{year.date}</b></span>
                         < hr />
                     </div>
                 }
@@ -103,7 +103,7 @@ const CreateEventForm = ({ year, setCreatedYear }: CreateEventFormProps) => {
                     <div className="required-fields">
                         <h5>Champs obligatoires</h5>
                         {
-                            year === 'new' &&
+                            !year.date &&
                             <div className="form-field">
                                 <label>Année de l'évènement : </label>
                                 <input type="text" name="date" required onChange={handleChange} />

@@ -59,6 +59,14 @@ export const createYear = (year: any) => {
     return axios.post(`http://localhost:8080/api/years`, data);
 }
 
+// update existing year
+export const updateYear = (year: any) => {
+    const data = { year: year };
+    const _id = year._id;
+    return axios.put(`http://localhost:8080/api/years/${_id}`, data);
+}
+
+
 // get all categories
 export const getAllCategories = (): Promise<AxiosResponse<Category[]>> => {
     return axios.get(`http://localhost:8080/api/categories`);

@@ -1,7 +1,7 @@
 
 import { Request, Response } from "express";
 import Year from '../models/year';
-import { sendOKResponse, sendCreatedResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse } from './responseHandler';
+import { sendOKResponse, sendCreatedResponse, sendNoContentResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse, sendNotFoundErrorResponse } from './responseHandler';
 
 // get all years including related events number, but without the events
 export const getAllYearsWithoutEvents = async (req: Request, res: Response) => {
@@ -54,11 +54,10 @@ export const getAllYearsEvents = async (req: Request, res: Response) => {
 
 // create a new year in db
 export const createYear = async (req: Request, res: Response) => {
-    console.log(req.body.year)
     const year = new Year({
         title: `Année ${req.body.year.date}`,
         date: req.body.year.date,
-        categoryGroup: [req.body.year.categoryGroup]
+        categoryGroup: req.body.year.categoryGroup
     });
 
     try {
@@ -69,3 +68,21 @@ export const createYear = async (req: Request, res: Response) => {
     }
 };
 
+
+export const updateYear = async (req: Request, res: Response) => {
+    const id = req.params['id'];
+    const year = req.body.year;
+    if (year && id) {
+        try {
+            await Year.updateOne({ _id: id }, {
+                categoryGroup: year.categoryGroup
+            })
+            sendNoContentResponse(res);
+        } catch (err) {
+            sendInternalServerErrorResponse(res, err);
+        }
+    } else {
+        const err = new Error('Year is not found');
+        sendNotFoundErrorResponse(res, err);
+    }
+}

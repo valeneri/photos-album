@@ -39,9 +39,7 @@ export interface Category {
 }
 
 export interface CategoryGroup {
-    // categories: {
     category: Category
     selected?: boolean
     value: number;
-    // }
 }

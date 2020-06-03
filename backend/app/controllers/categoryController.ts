@@ -14,12 +14,9 @@ export const getAllCategories = async (req: Request, res: Response) => {
 
 // create a new category
 export const createCategory = async (req: any, res: Response) => {
-    console.log(req.body);
-    console.log(req.file);
     const name = req.body.name;
     const label = req.body.label;
 
-    console.log("category name :", name)
     if (name && label && req.file) {
         const icon = req.file;
         const newCategory = new Category({

@@ -12,3 +12,6 @@ yearRouter.get('/events', yearController.getAllYearsEvents);
 
 // Post new year
 yearRouter.post('/', yearController.createYear);
+
+// Put new year
+yearRouter.put('/:id', yearController.updateYear);

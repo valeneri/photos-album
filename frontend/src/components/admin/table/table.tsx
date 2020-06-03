@@ -3,39 +3,29 @@ import { YearEvents, Event, Category, CategoryGroup } from "../../../shared/mode
 import "./table.css";
 
 interface TableProps {
-    yearsEvents: YearEvents[],
-    handleAddEvent: any
+    yearsEvents: YearEvents[];
+    categories: Category[];
+    addEvent: any;
 }
 
-const Table = ({ yearsEvents, handleAddEvent }: TableProps) => {
+const Table = ({ yearsEvents, categories, addEvent }: TableProps) => {
 
-    const setAllYearsCategoryGroup = (years: YearEvents[]): YearEvents[] => {
-        return years.map((year: YearEvents) => {
-            const categoryGroup = setEventsCategoryGroup(year);
-            year["categoryGroup"] = categoryGroup;
-            return year;
-        })
-    };
-
-    const setEventsCategoryGroup = (year: YearEvents): CategoryGroup[] => {
-        const total: CategoryGroup = { category: { name: 'total', label: 'Toutes' }, value: 0, selected: false };
-        let categories: CategoryGroup[] = [total];
-
-        year.events.forEach((event: Event) => {
-            const index = categories.findIndex((cat: CategoryGroup) => cat.category.name === event.category.name);
+    const setCategoriesValue = (categoryGroup: CategoryGroup[]) => {
+        let value = 0;
+        return categories.map((cat: Category) => {
+            const index = categoryGroup.findIndex((catGroup: CategoryGroup) => {
+                return catGroup.category.name === cat.name;
+            })
             if (index !== -1) {
-                categories[index].value++;
-            } else {
-                const eventCategory: CategoryGroup = { category: event.category, selected: false, value: 1 };
-                categories.push(eventCategory);
+                value = categoryGroup[index].value;
             }
-            //total is the first element
-            categories[0].value++;
-        });
-        return categories;
-    };
-
-    const [yearsEventWithCategories, setYearsEventWithCategories] = useState<YearEvents[]>(setAllYearsCategoryGroup(yearsEvents))
+            return (
+                <td key={cat._id}>
+                    <span>{value}</span>
+                </td>
+            )
+        })
+    }
 
     return (
         <table>
@@ -46,47 +36,34 @@ const Table = ({ yearsEvents, handleAddEvent }: TableProps) => {
                     <th rowSpan={2}>Actions</th>
                 </tr>
                 <tr>
-                    <th>Anniversaires</th>
-                    <th>Vacances</th>
-                    <th>Noël</th>
-                    <th>Abstrait</th>
-                    <th>Autre</th>
-                    <th>Non classé</th>
+                    {
+                        categories && categories.map((category: Category) => {
+                            return <th key={category._id}>{category.label}</th>
+                        })
+                    }
                 </tr>
             </thead>
-            {/* <tbody>
+            <tbody>
+                {
+                    yearsEvents && yearsEvents.map((yearEvents: YearEvents) => {
+                        if (yearEvents.categoryGroup) {
+                            return (
+                                <tr key={yearEvents._id}>
+                                    <th>{yearEvents.date} ({yearEvents.events.length})</th>
 
-                {yearsEventWithCategories && yearsEventWithCategories.map((yearEvents: YearEvents) => {
-                    const categoryGroup = yearEvents.categoryGroup;
-                    return (
-                        <tr key={yearEvents._id}>
-                            <th>{yearEvents.date} ({yearEvents.events.length})</th>
-                            <td>
-                                <span>{category[0].value}</span>
-                            </td>
-                            <td>
-                                <span>{category[1].value}</span>
-                            </td>
-                            <td>
-                                <span>{category[2].value}</span>
-                            </td>
-                            <td>
-                                <span>{category[3].value}</span>
-                            </td>
-                            <td>
-                                <span>{category[4].value}</span>
-                            </td>
-                            <td>
-                                <span>{category[5].value}</span>
-                            </td>
-                            <td>
-                                <button onClick={() => { handleAddEvent(yearEvents.date) }}>Ajout </button>
-                                <button>Modifier</button>
-                                <button>Supprimer</button>
-                            </td>
-                        </tr>)
-                })}
-            </tbody> */}
+                                    {setCategoriesValue(yearEvents.categoryGroup)}
+
+                                    <td>
+                                        <button onClick={() => { addEvent(yearEvents) }}>Ajout Evènement</button>
+                                        <button>Modifier</button>
+                                        <button>Supprimer</button>
+                                    </td>
+                                </tr>
+                            )
+                        }
+                    })
+                }
+            </tbody>
         </table>
     )
 }

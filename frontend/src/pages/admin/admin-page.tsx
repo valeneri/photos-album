@@ -2,24 +2,32 @@ import React, { useEffect, useState } from "react";
 import * as api from "../../shared/api";
 import CreateEventForm from "../../components/admin/create-event-form/create-event-form";
 import Table from "../../components/admin/table/table";
-import { YearEvents } from "../../shared/models";
+import { YearEvents, Category } from "../../shared/models";
 import "./admin-page.css";
 
 const AdminPage = () => {
 
     const [yearsEvents, setYearsEvents] = useState<YearEvents[]>([]);
-    const [eventYear, setEventYear] = useState<string>("");
+    const [eventYear, setEventYear] = useState<YearEvents>();
+    const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
-        const getAllYearsEvents = async () => {
-            const response = await api.getAllYearsEvents();
-            setYearsEvents(response.data);
+        const getAllYearsEventsAndCategories = async () => {
+            const yearResponse = await api.getAllYearsEvents();
+            const categoriesResponse = await api.getAllCategories();
+            setYearsEvents(yearResponse.data);
+            setCategories(categoriesResponse.data);
         }
-        getAllYearsEvents();
+        getAllYearsEventsAndCategories();
     }, []);
 
-    const addEvent = (date: string) => {
-        setEventYear(date);
+    const handleAddEvent = (year: YearEvents) => {
+        setEventYear(year);
+    }
+
+    const createNewYearEvent = () => {
+        const newYear = {} as YearEvents;
+        setEventYear(newYear);
     }
 
     const handleCreatedYear = async () => {
@@ -29,16 +37,18 @@ const AdminPage = () => {
 
     return (
         <div className="admin">
-            <button onClick={() => setEventYear('new')}>Créér nouvel évènement</button>
             <div className="table-component">
-                {/* <Table yearsEvents={yearsEvents} handleAddEvent={addEvent} /> */}
+                <Table yearsEvents={yearsEvents} categories={categories} addEvent={handleAddEvent} />
             </div>
             <hr />
-            <div className="full-form">
-                <div className="create-event-form">
-                    {eventYear && eventYear !== "" && <CreateEventForm year={eventYear} setCreatedYear={handleCreatedYear} />}
+            <button onClick={() => createNewYearEvent()}>Créér nouvel évènement</button>
+            {eventYear &&
+                <div className="full-form">
+                    <div className="create-event-form">
+                        <CreateEventForm year={eventYear} categories={categories} setCreatedYear={handleCreatedYear} />
+                    </div>
                 </div>
-            </div>
+            }
         </div>
 
     );

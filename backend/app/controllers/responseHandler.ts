@@ -18,6 +18,10 @@ const sendCreatedResponse = (res: Response, data: any) => {
     succeed(201, data, res);
 }
 
+const sendNoContentResponse = (res: Response) => {
+    succeed(204, null, res);
+}
+
 const sendBadRequestErrorResponse = (res: Response, err: Error) => {
     failed(400, err, res)
 }
@@ -30,4 +34,4 @@ const sendNotFoundErrorResponse = (res: Response, err: Error) => {
     failed(404, err, res);
 }
 
-export { sendOKResponse, sendCreatedResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse, sendNotFoundErrorResponse }
+export { sendOKResponse, sendCreatedResponse, sendNoContentResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse, sendNotFoundErrorResponse }

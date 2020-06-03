@@ -44,9 +44,6 @@ export const createEvent = async (req: Request, res: Response) => {
     const event = req.body.event;
 
     if (event) {
-        // const eventTag = `${newEvent.title}_${newEvent.full_date}`;
-        console.log(event)
-        console.log(event.category);
         const newEvent = new Event({
             title: event.title,
             full_date: event.full_date,
