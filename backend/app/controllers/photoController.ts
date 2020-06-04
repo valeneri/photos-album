@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import fs from "fs-extra";
 import Photo from "../models/photo";
 import { sendOKResponse, sendCreatedResponse, sendNotFoundErrorResponse, sendInternalServerErrorResponse, sendBadRequestErrorResponse } from './responseHandler';
+import sharp from 'sharp';
 
 // get all photos in a selected year
 export const getPhotosByYear = async (req: Request, res: Response) => {
@@ -32,22 +33,21 @@ export const savePhotosEvent = async (req: any, res: Response) => {
     const pathPrefix = `${date}/${title}/`;
     const photoList = [];
 
-    // createDir(pathPrefix);
-
     if (req.files) {
-        req.files.forEach(photo => {
-            const newPhoto = new Photo({
-                eventTag: eventTag,
-                name: photo.filename,
-                path: pathPrefix + photo.filename,
-                dir: pathPrefix,
-                mimeType: photo.mimetype
-            });
-            photoList.push(newPhoto);
-            moveFiles(photo.filename, pathPrefix);
-        })
-
         try {
+            req.files.forEach(photo => {
+                const newPhoto = new Photo({
+                    eventTag: eventTag,
+                    name: photo.filename,
+                    path: pathPrefix + photo.filename,
+                    thumbnailPath: `${pathPrefix}thumbnails-${photo.filename}`,
+                    dir: pathPrefix,
+                    mimeType: photo.mimetype
+                });
+                photoList.push(newPhoto);
+                generateThumbnails(photo, pathPrefix);
+                moveFiles(photo.filename, pathPrefix);
+            })
             const photos = await Photo.insertMany(photoList);
             sendCreatedResponse(res, photos);
         } catch (err) {
@@ -59,18 +59,23 @@ export const savePhotosEvent = async (req: any, res: Response) => {
     }
 }
 
-export const createDir = async (dir: string) => {
+const generateThumbnails = async (photo, pathPrefix) => {
     try {
-        await fs.ensureDir(`public/photos/${dir}`)
+        await sharp(photo.path).resize(150, 150)
+            .png()
+            .toFile(`${photo.destination}thumbnails-${photo.filename}`);
+        await moveFiles(`thumbnails-${photo.filename}`, pathPrefix);
     } catch (err) {
-        console.log("erorr", err);
+        console.log('Error resizing photos', err);
+        throw (err);
     }
 }
 
-export const moveFiles = async (fileName: string, dir: string) => {
+const moveFiles = async (fileName: string, dir: string) => {
     try {
         await fs.move(`public/upload/${fileName}`, `public/photos/${dir}/${fileName}`);
     } catch (err) {
         console.log("ERROR moving files", err)
+        throw (err);
     }
 }

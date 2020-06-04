@@ -28,6 +28,7 @@ export interface Photo {
     name: string;
     title: string;
     path: string;
+    thumbnailPath: string;
     date: string
     eventTag: string
 }

@@ -13,6 +13,10 @@ const PhotoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    thumbnailPath: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true

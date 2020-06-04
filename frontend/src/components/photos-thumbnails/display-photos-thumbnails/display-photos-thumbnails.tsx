@@ -25,7 +25,7 @@ const DisplayPhotosThumbnails = ({ selectedEvent, setSelectedPhoto }: DisplayPho
                 {selectedEvent && selectedEvent.photos.map((photo: Photo) => {
                     return (
                         <div key={photo._id} className="photos-wrapper" onClick={() => setSelectedPhoto(photo, selectedEvent)}>
-                            <img className="photos" src={`http://localhost:8080/static/photos/${photo.path}`} />
+                            <img className="photos" src={`http://localhost:8080/static/photos/${photo.thumbnailPath}`} />
                         </div>
                     )
                 })}
