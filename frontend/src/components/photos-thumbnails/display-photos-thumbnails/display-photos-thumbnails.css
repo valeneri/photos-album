@@ -35,3 +35,10 @@ span h3 {
     margin-bottom: 1%; 
     background-color: #5a606d1f;
 }
+
+.event-description {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-start; */
+    align-content: center;
+}

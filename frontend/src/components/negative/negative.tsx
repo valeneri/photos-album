@@ -30,7 +30,7 @@ const Negative = ({ yearsEventsList, setSelectedYear }: NegativeProps) => {
     // display years list as events with "real events" next when year is selected
     const displayYearsEvents = () => yearsEventsList.map((yearEvents: YearEvents) => {
         return (
-            <div className="years-events wrapper" key={yearEvents._id}>
+            <div className="years-ui wrapper" key={yearEvents._id}>
                 <div>
                     <YearUI year={yearEvents} setSelectedYear={setSelectedYear} />
                     <div style={{ borderRight: `2px solid white` }}></div>

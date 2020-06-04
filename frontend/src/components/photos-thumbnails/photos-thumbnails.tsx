@@ -1,59 +1,58 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import * as api from "../../shared/api";
 import { Category, CategoryGroup, Event, YearEvents } from "../../shared/models";
-import { textDate } from '../../shared/utils';
 import Categories from "./categories/categories";
 import DisplayPhotosThumbnails from "./display-photos-thumbnails/display-photos-thumbnails";
+import EventsTab from "./events-tab/events-tab";
 import "./photos-thumbnails.css";
 
 interface PhotosThumbnailsProps {
     selectedYear: YearEvents;
+    categories: Category[];
     setSelectedEvent: any;
     setSelectedPhoto: any;
-    categories: Category[];
+    setSelectedCategories: any;
 }
 
-const PhotosThumbnails = ({ selectedYear, categories, setSelectedEvent, setSelectedPhoto }: PhotosThumbnailsProps) => {
-
-    // autoselect (selected = true) by default before display in Categories component
-    const setToSelected = (categoryGroup: CategoryGroup[]): CategoryGroup[] => {
-        const categoryGroupCopy = Array.from(categoryGroup);
-
-        let total: CategoryGroup = { category: { name: 'total', label: 'Toutes' }, value: 0, selected: true };
-        let sum = 0;
-
-        categoryGroupCopy.map((catGroup: CategoryGroup) => {
-            catGroup['selected'] = true;
-            sum += catGroup.value;
-            return catGroup;
-        })
-        total.value = sum;
-        categoryGroupCopy.unshift(total);
-        return categoryGroupCopy;
-    };
+const PhotosThumbnails = ({ selectedYear, categories, setSelectedEvent, setSelectedCategories, setSelectedPhoto }: PhotosThumbnailsProps) => {
 
     // set events list
-    const [events, setEvents] = useState<Event[]>(selectedYear.events);
+    const [events, setEvents] = useState<Event[]>([]);
 
-    // handle categories on select, then filter events 
-    const handleSelectCategories = (selectedCategoriesGroup: CategoryGroup[]) => {
-        // TODO
-        // Filter events list depeding on their category, if selected or not
-        console.log(selectedCategoriesGroup);
+    // keep local events state to be displayed in tabs
+    // /!\ display children ONLY when events state is set, thus useLayoutEffect /!\
+    useLayoutEffect(() => {
+        setEvents(displayEvents(selectedYear.events));
+    }, [selectedYear.events])
+
+    const displayEvents = (events: Event[]) => {
+        const eventsCopy = Array.from(events);
+        const selectedCategoriesGroup = selectedYear.categoryGroup.filter(cat => cat.selected);
+
+        const filteredEventsCopy = eventsCopy.filter((event: Event) => {
+            return selectedCategoriesGroup.find(cat => cat.category.name === event.category.name);
+        })
+        return filteredEventsCopy;
     }
 
-    // display selected event photos, or "click me" if no event is selected
-    const displayPhotos = (event: Event) => {
-        return (
-            <div key={event._id} style={{ display: (event.selected ? 'block' : 'none') }}>
-                <DisplayPhotosThumbnails selectedEvent={event} setSelectedPhoto={setSelectedPhoto} />
-            </div>
-        )
+    // handle categories on select, then filter events 
+    const handleSelectCategories = (categoriesGroup: CategoryGroup[]) => {
+        const selectedCategoriesGroup = categoriesGroup.filter(cat => cat.selected);
+        const eventsCopy = Array.from(selectedYear.events);
+
+        const filteredEventsCopy = eventsCopy.filter((event: Event) => {
+            return selectedCategoriesGroup.find(cat => cat.category.name === event.category.name);
+        })
+
+        const yearWithCategoriesCopy = selectedYear;
+        yearWithCategoriesCopy.categoryGroup = categoriesGroup;
+        setSelectedCategories(yearWithCategoriesCopy);
+        setEvents(filteredEventsCopy);
     }
 
     // get selected event photos if there aren't any already, then toggle selected flag
-    const handleSelectedEvent = async (event: Event) => {
-        const copyEvents = [...events];
+    const handleSelectEvent = async (event: Event) => {
+        const copyEvents = Array.from(selectedYear.events);
 
         if (!event.photos) {
             const tag = event.eventTag;
@@ -63,57 +62,13 @@ const PhotosThumbnails = ({ selectedYear, categories, setSelectedEvent, setSelec
 
         copyEvents.forEach((evt: Event) => {
             if (evt._id === event._id) {
-                evt = event;
+                // evt = event;
                 evt.selected = !evt.selected;
             } else {
                 evt.selected = false
             }
         })
         setSelectedEvent(event);
-        setEvents(copyEvents);
-    }
-
-    // check if there's event in year in order to display them
-    // const isEventCategorySelected = (event: Event) => {
-    //     const selectedCategories = categoriesGroup.filter(cat => cat.selected);
-    //     // const events = selectedYear.events.filter((event: Event) => {
-    //     if (selectedCategories.find((categoryGroup: CategoryGroup) => categoryGroup.category.name === event.category.name)) {
-    //         return true;
-    //     }
-    //     // })
-    //     // return events.length > 0 ? true : false;
-    // }
-
-    // display events in a tab
-    const displayEventsTab = () => {
-        // const selectedCategories = categories.filter((category: CategoryGroup) => category.selected);
-        const events: Event[] = selectedYear.events;
-
-        return events.map((event: Event) => {
-            // if (isEventCategorySelected(event)) {
-            return (
-                <div key={`${event._id}`} className={`event-tab-details ${event.selected ? 'selected' : null}`} onClick={() => handleSelectedEvent(event)}>
-                    <span className="title"><b>{event.title}</b></span>
-                    <span>
-                        {textDate(event.full_date)}
-                        <small> ({event.photosNumber} photos)</small>
-                    </span>
-                </div>
-            )
-            // display also untagged events
-            // } else if (categories[5].selected && categories.every((cat: Category) => cat.name !== event.category)) {
-            //     return (
-            //         <div key={`${event._id}`} className={`event-tab-details ${event.selected ? "selected" : null}`} onClick={() => handleSelectedEvent(event)}>
-            //             <span className="title"><b>{event.title}</b></span>
-            //             <span>
-            //                 {textDate(event.full_date)}
-            //                 <small> ({event.photosNumber} photos)</small>
-            //             </span>
-            //         </div>
-            //     )
-            // 
-            // }
-        })
     }
 
     return (
@@ -122,32 +77,32 @@ const PhotosThumbnails = ({ selectedYear, categories, setSelectedEvent, setSelec
                 <div className="year-details">
                     <h2>Année {selectedYear.date}</h2>
                 </div>
-                <div className="categories-component">
-                    <Categories fullCategoriesList={categories} yearCategoriesGroup={setToSelected(selectedYear.categoryGroup)} setSelectedCategories={handleSelectCategories} />
-                </div>
+                {
+                    categories &&
+                    <div className="categories-component">
+                        <Categories
+                            fullCategoriesList={categories}
+                            yearCategoriesGroup={selectedYear.categoryGroup}
+                            setSelectedCategories={handleSelectCategories}
+                        />
+                    </div>
+                }
             </div>
             {
-                // checkEvents() ?
-                <div>
-                    <div className="events-tab-wrapper">
-                        {displayEventsTab()}
-                    </div>
-                    <div className="thumbnails-wrapper">
+                events.length === 0 ?
+                    <div style={{ marginLeft: `2%` }}>
+                        <h3>Aucun évènement</h3>
+                    </div> :
+                    <div>
+                        <EventsTab events={events} setSelectedEvent={handleSelectEvent} />
                         {
-                            events.filter(evt => { return evt.selected }).length > 0 ?
-                                events.map((event: Event) => {
-                                    if (event.photos) {
-                                        return displayPhotos(event)
-                                    }
-                                })
-                                : <h3 style={{ textAlign: `left` }}>Cliquez sur un évènement pour afficher les photos</h3>
+                            events.filter(evt => evt.selected)[0] ?
+                                <div className="thumbnails-wrapper">
+                                    <DisplayPhotosThumbnails selectedEvent={events.filter(evt => evt.selected)[0]} setSelectedPhoto={setSelectedPhoto} />
+                                </div>
+                                : <h3 style={{ textAlign: `left`, marginLeft: `2%` }}>Cliquez sur un évènement pour afficher les photos</h3>
                         }
                     </div>
-                </div>
-                // :
-                // <div style={{ marginLeft: `2%` }}>
-                //     <h3>Aucun évènement</h3>
-                // </div>
             }
         </div>
     )

@@ -5,18 +5,19 @@ import Negative from "../../components/negative/negative";
 import { usePhotosModal } from "../../shared/hooks/use-photos-modal";
 import { sortEventsByDateAsc } from '../../shared/utils';
 import "./events-page.css";
-import { YearEvents, Event, Photo, Category } from "../../shared/models";
+import { YearEvents, Event, Photo, Category, CategoryGroup } from "../../shared/models";
 
 const EventsPage = () => {
     /*  states declaration */
     // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
+    // set categories list
+    const [categories, setCategories] = useState<Category[]>([]);
     // set selected thumbnails photo index
     const [startIndex, setStartIndex] = useState<number>(-1);
     // set selected thumbnails event
     const [displayedEvent, setDisplayedEvent] = useState<Event>();
-    // set categories list
-    const [categories, setCategories] = useState<Category[]>([]);
+
     // photo modal hook
     const { show, RenderPhotosModal } = usePhotosModal();
 
@@ -37,18 +38,24 @@ const EventsPage = () => {
         const index = yearsEventsList.findIndex(year => year._id === yearEvents._id);
         const copyYearsEventsList = [...yearsEventsList];
 
+        // by default, year has no events if it has never been selected
+        // => get all associated events
+        // => set all categories to selected on first selection
         if (!yearEvents.events && index != -1) {
             const response = await api.getEventsByYear(yearEvents.date);
             copyYearsEventsList[index]["events"] = response.data;
 
             sortEventsByDateAsc(copyYearsEventsList[index].events);
+            const selectedCategoriesGroup = autoSelect(copyYearsEventsList[index].categoryGroup);
+            copyYearsEventsList[index].categoryGroup = selectedCategoriesGroup;
         }
         copyYearsEventsList[index].selected = !copyYearsEventsList[index].selected;
+
         setYearsEventsList(copyYearsEventsList);
     }
 
     // Get event's photos and toggle selected flag 
-    const handleSelectEvent = async (event: Event) => {
+    const handleSelectEvent = (event: Event) => {
         const copyYearsEventsList = [...yearsEventsList];
 
         copyYearsEventsList.forEach(yearEvents => {
@@ -74,6 +81,30 @@ const EventsPage = () => {
         }
     }
 
+    // set selected categories into YearsEventsList
+    const handleSelectCategories = (yearEvent: YearEvents) => {
+        const copyYearsEventsList = [...yearsEventsList];
+        const index = copyYearsEventsList.findIndex((year: YearEvents) => year._id === yearEvent._id);
+        copyYearsEventsList[index] = yearEvent;
+        setYearsEventsList(copyYearsEventsList);
+    }
+
+    // autoselect (selected = true) and add Total, by default before display in Categories component
+    const autoSelect = (categoryGroup: CategoryGroup[]): CategoryGroup[] => {
+        const categoryGroupCopy = Array.from(categoryGroup);
+        let total: CategoryGroup = { category: { name: 'total', label: 'Toutes' }, value: 0, selected: true };
+        let sum = 0;
+
+        categoryGroupCopy.map((catGroup: CategoryGroup) => {
+            catGroup['selected'] = true;
+            sum += catGroup.value;
+            return catGroup;
+        })
+        total.value = sum;
+        categoryGroupCopy.unshift(total);
+        return categoryGroupCopy;
+    };
+
     return (
         <div className="main-wrapper">
             <div className="timeline-component">
@@ -84,15 +115,17 @@ const EventsPage = () => {
             </div>
             <div className="photos-thumbnails-component">
                 {
+                    yearsEventsList &&
                     yearsEventsList.map((year: YearEvents) => {
-                        if (year.selected && year.events.length > 0) {
+                        if (year.selected && year.events) {
                             return (
                                 <div className="photos-thumbnails" key={year._id}>
                                     <PhotosThumbnails
                                         selectedYear={year}
+                                        categories={categories}
                                         setSelectedEvent={handleSelectEvent}
                                         setSelectedPhoto={handleSelectPhoto}
-                                        categories={categories}
+                                        setSelectedCategories={handleSelectCategories}
                                     />
                                 </div>
                             )

@@ -1,23 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { Category, CategoryGroup } from "../../../shared/models";
 import "./categories.css";
 
-interface FiltersProps {
+// Categories Props Interface declaration
+interface CategoriesProps {
     yearCategoriesGroup: CategoryGroup[];
     fullCategoriesList: Category[];
     setSelectedCategories: any;
 }
 
-const Categories = ({ yearCategoriesGroup, fullCategoriesList, setSelectedCategories }: FiltersProps) => {
-
-    // set year categories
-    const [categoriesGroup, setCategoriesGroup] = useState<CategoryGroup[]>(yearCategoriesGroup);
+const Categories = ({ yearCategoriesGroup, fullCategoriesList, setSelectedCategories }: CategoriesProps) => {
 
     // set selected category
     // performs autoselect if necessary
     // send categoriesGroup to parent in order to filter displayed events
     const handleSelectedCategories = (catGroup: CategoryGroup) => {
-        let categoriesGroupCopy = [...categoriesGroup];
+        let categoriesGroupCopy = Array.from(yearCategoriesGroup);
         const index = categoriesGroupCopy.findIndex((cat: CategoryGroup) => cat.category.name === catGroup.category.name);
         categoriesGroupCopy[index].selected = !categoriesGroupCopy[index].selected;
 
@@ -35,7 +33,7 @@ const Categories = ({ yearCategoriesGroup, fullCategoriesList, setSelectedCatego
             // refers to 'total' category
             isAllCategoriesSelected ? categoriesGroupCopy[0].selected = true : categoriesGroupCopy[0].selected = false;
         }
-        setCategoriesGroup(categoriesGroupCopy);
+        setSelectedCategories(categoriesGroupCopy);
     }
 
     // display icons from categories list if category isn't 'total'
@@ -61,9 +59,9 @@ const Categories = ({ yearCategoriesGroup, fullCategoriesList, setSelectedCatego
             {
                 <div className="categories-details">
                     {
-                        categoriesGroup &&
+                        yearCategoriesGroup &&
                         fullCategoriesList &&
-                        categoriesGroup.map((catGroup: CategoryGroup, index: number) => {
+                        yearCategoriesGroup.map((catGroup: CategoryGroup, index: number) => {
                             return (
                                 catGroup.value > 0 &&
                                 <div
