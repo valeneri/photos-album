@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as api from "../../shared/api";
 import PhotosThumbnails from "../../components/photos-thumbnails/photos-thumbnails";
 import Negative from "../../components/negative/negative";
@@ -9,6 +9,8 @@ import { YearEvents, Event, Photo, Category, CategoryGroup } from "../../shared/
 
 const EventsPage = () => {
     /*  states declaration */
+    // set years events list (immutable for negative component)
+    const [yearsList, setYearsList] = useState<YearEvents[]>([]);
     // set years events full list
     const [yearsEventsList, setYearsEventsList] = useState<YearEvents[]>([]);
     // set categories list
@@ -26,9 +28,10 @@ const EventsPage = () => {
         const getAllYearsAndCategories = async () => {
             const yearsResponse = await api.getAllYearsWithoutEvents();
             const categoriesResponse = await api.getAllCategories();
-            // const sortedYears = sortYearsByDateDesc(response.data);
+
             setYearsEventsList(yearsResponse.data);
             setCategories(categoriesResponse.data);
+            setYearsList(yearsResponse.data);
         }
         getAllYearsAndCategories();
     }, []);
@@ -109,8 +112,9 @@ const EventsPage = () => {
         <div className="main-wrapper">
             <div className="timeline-component">
                 {
-                    yearsEventsList.length > 0 &&
-                    <Negative yearsEventsList={yearsEventsList} setSelectedYear={handleSelectYear} />
+                    yearsList &&
+                    yearsList.length > 0 &&
+                    <Negative yearsEventsList={yearsList} setSelectedYear={handleSelectYear} />
                 }
             </div>
             <div className="photos-thumbnails-component">
