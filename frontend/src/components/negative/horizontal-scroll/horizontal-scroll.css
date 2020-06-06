@@ -1,11 +1,13 @@
 /***************** HORIZONTAL SCROLL COMPONENT **************/
 .scroll-wrapper {
-    min-height: 28px;
+    min-height: 30px;
     min-width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: rgba(3, 3, 3, 0.301);
-    opacity: 1;
+    /* background-color: rgba(3, 3, 3, 0.301); */
+    background-image: url('./border_bottom.png');
+    border-top: 1px solid #413d3d;
+    opacity: 0.8;
   }
  
 .selector-wrapper {

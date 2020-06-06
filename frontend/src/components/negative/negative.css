@@ -4,7 +4,7 @@
 }
 
 .full-years-list {
-    height: 220px;
+    height: 224px;
     flex-direction: column;
     max-width: 100%;
     overflow: hidden;
@@ -12,16 +12,34 @@
 
 /* border above and under events */
 .border {
-    min-height: 28px;
+    min-height: 30px;
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
-    background-color: rgba(3, 3, 3, 0.301);
+    opacity: 0.8;
+    /* display: grid; */
+    /* grid-template-columns: repeat(auto-fit, minmax(10px, 1fr)); */
+    /* background-color: rgba(3, 3, 3, 0.301); */
 }
 
+.top {
+    /* border-top: 1px solid black; */
+    border-bottom: 1px solid #413d3d;
+    background-image: url('./borders/border_top.png');
+}
 /* full years list wapper */
 .full-years {
     height: 164px;
     margin-left: 1%;
     max-width: 99%;
 }
+/* 
+.year {
+    border: 7px solid white;
+    background-color: rgb(61, 57, 57);
+    color: orange;
+    min-width: 230px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+} */
