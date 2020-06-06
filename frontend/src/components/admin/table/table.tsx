@@ -32,7 +32,7 @@ const Table = ({ yearsEvents, categories, addEvent }: TableProps) => {
             <thead>
                 <tr>
                     <th rowSpan={2}>Années</th>
-                    <th colSpan={6}>Nombre d'évènements</th>
+                    <th colSpan={categories.length}>Nombre d'évènements</th>
                     <th rowSpan={2}>Actions</th>
                 </tr>
                 <tr>
