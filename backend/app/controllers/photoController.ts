@@ -61,7 +61,7 @@ export const savePhotosEvent = async (req: any, res: Response) => {
 
 const generateThumbnails = async (photo, pathPrefix) => {
     try {
-        await sharp(photo.path).resize(150, 150)
+        await sharp(photo.path).resize(200, 200)
             .png()
             .toFile(`${photo.destination}thumbnails-${photo.filename}`);
         await moveFiles(`thumbnails-${photo.filename}`, pathPrefix);
@@ -74,6 +74,7 @@ const generateThumbnails = async (photo, pathPrefix) => {
 const moveFiles = async (fileName: string, dir: string) => {
     try {
         await fs.move(`public/upload/${fileName}`, `public/photos/${dir}/${fileName}`);
+        await fs.remove(`public/upload/${fileName}`);
     } catch (err) {
         console.log("ERROR moving files", err)
         throw (err);
